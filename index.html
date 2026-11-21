@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APPS.</title>
+
+  <!-- Google Material Symbols -->
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&icon_names=arrow_outward&display=block"
+  >
+
+  <style>
+    :root {
+      --background: #f8f8f6;
+      --surface: #ffffff;
+      --text: #343a36;
+      --muted: #8b918d;
+      --accent: #899b91;
+      --border: #e9ebe8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family:
+        -apple-system, BlinkMacSystemFont,
+        "Helvetica Neue", "Noto Sans JP", sans-serif;
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(100% - 48px, 960px);
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 64px 0 72px;
+      text-align: center;
+    }
+
+    .site-title {
+      margin: 0;
+      font-size: 42px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+    }
+
+    main {
+      padding-bottom: 100px;
+    }
+
+    .section-heading {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .app-card {
+      display: block;
+      padding: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .app-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(50, 60, 54, 0.06);
+    }
+
+    .app-category {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+    }
+
+    .app-name {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .app-description {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .card-arrow {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 24px;
+      color: var(--accent);
+    }
+
+    .material-symbols-outlined {
+      font-size: 20px;
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+      letter-spacing: normal;
+      white-space: nowrap;
+      direction: ltr;
+      font-feature-settings: "liga";
+      -webkit-font-smoothing: antialiased;
+    }
+
+    footer {
+      padding: 28px 0 36px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .github-link:hover {
+      color: var(--text);
+    }
+
+    .github-link .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: min(100% - 32px, 480px);
+      }
+
+      header {
+        padding: 48px 0 56px;
+      }
+
+      .site-title {
+        font-size: 36px;
+      }
+
+      .app-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .app-card {
+        padding: 24px;
+      }
+
+      main {
+        padding-bottom: 72px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <header>
+      <h1 class="site-title">APPS.</h1>
+    </header>
+
+    <main>
+      <section>
+        <h2 class="section-heading">APPLICATIONS</h2>
+
+        <div class="app-grid">
+
+          <a class="app-card" href="./tools/oracle/daily-oracle/">
+            <p class="app-category">PERSONAL</p>
+            <h3 class="app-name">Daily ORACLE</h3>
+            <p class="app-description">
+              オラクルカードのリーディングを記録するツール
+            </p>
+            <span class="card-arrow">
+              <span class="material-symbols-outlined"
+                    aria-hidden="true">arrow_outward</span>
+            </span>
+          </a>
+
+          <a class="app-card" href="./tools/overtime-manager/">
+            <p class="app-category">WORK</p>
+            <h3 class="app-name">Overtime Manager</h3>
+            <p class="app-description">
+              残業時間や勤務時間を管理するツール
+            </p>
+            <span class="card-arrow">
+              <span class="material-symbols-outlined"
+                    aria-hidden="true">arrow_outward</span>
+            </span>
+          </a>
+
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a
+        class="github-link"
+        href="https://github.com/tsrhtm123/apps"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+        <span class="material-symbols-outlined"
+              aria-hidden="true">arrow_outward</span>
+      </a>
+
+      <span>© 2026 APPS.</span>
+    </footer>
+
+  </div>
+</body>
+</html>
