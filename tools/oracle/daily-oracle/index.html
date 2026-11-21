@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Daily ORACLE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-page: #faf8f5;
+      --bg-card: #ffffff;
+      --text-main: #2c2825;
+      --text-sub: #7a7267;
+      --accent: #8c7355;
+      --accent-soft: #f4eee6;
+      --border: #e6dfd5;
+      --danger: #b85454;
+      --shadow: 0 2px 12px rgba(44, 40, 37, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 88px;
+    }
+
+    header {
+      background: rgba(250, 248, 245, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .header-left h1 {
+      font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .header-sub {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin-top: 3px;
+    }
+
+    .header-badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+      border: 1px solid var(--border);
+    }
+
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    .card-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    label.field-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .char-counter {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .char-counter.over {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .manage-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .action-link {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .action-link:hover {
+      color: var(--accent);
+    }
+    .action-link.active-del {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    input[type="date"],
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background: #faf8f5;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 88px;
+      line-height: 1.65;
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #faf8f5;
+      color: var(--text-main);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chip.selected {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .chip.delete-mode {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: #fff8f8;
+    }
+    .chip.delete-mode::after {
+      content: "×";
+      font-weight: 700;
+      margin-left: 2px;
+    }
+
+    .add-inline-box {
+      display: none;
+      margin-top: 8px;
+      gap: 8px;
+    }
+    .add-inline-box.open {
+      display: flex;
+    }
+    .add-inline-box input {
+      padding: 7px 10px;
+      font-size: 0.82rem;
+    }
+    .add-inline-box button {
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+    }
+
+    .mood-btn {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #faf8f5;
+      color: var(--text-main);
+      font-size: 0.8rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.15s;
+    }
+    .mood-btn.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .save-hint {
+      text-align: center;
+      font-size: 0.76rem;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+      letter-spacing: 0.03em;
+    }
+
+    .primary-btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 4px;
+    }
+    .primary-btn:hover {
+      opacity: 0.92;
+    }
+
+    /* ログ一覧＆絞り込み */
+    .filter-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .filter-row select {
+      padding: 8px 10px;
+      font-size: 0.78rem;
+    }
+
+    .log-summary-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin: 4px 2px 10px;
+      gap: 8px;
+    }
+
+    .backup-links {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .subtle-link {
+      font-size: 0.73rem;
+      color: var(--text-sub);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color 0.15s;
+    }
+    .subtle-link:hover {
+      color: var(--accent);
+    }
+
+    .link-sep {
+      font-size: 0.7rem;
+      color: var(--border);
+      user-select: none;
+    }
+
+    .log-empty {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-sub);
+      font-size: 0.88rem;
+    }
+
+    .log-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .log-top-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .log-date-badge {
+      font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: #faf8f5;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      letter-spacing: 0.05em;
+    }
+
+    .log-q-badge {
+      font-size: 0.78rem;
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .log-mood-badge {
+      font-size: 0.78rem;
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: #faf8f5;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .log-del-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      transition: color 0.15s;
+    }
+    .log-del-btn:hover {
+      color: var(--danger);
+    }
+
+    .log-deck-name {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .log-card-name {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .log-motif-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      margin-bottom: 10px;
+    }
+
+    .log-message-box {
+      background: #faf8f5;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-main);
+      white-space: pre-wrap;
+    }
+
+    /* 画像出力画面 */
+    .option-section {
+      margin-bottom: 16px;
+    }
+    .option-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .theme-btn {
+      padding: 9px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #faf8f5;
+      font-size: 0.78rem;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+    }
+    .theme-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      font-weight: 600;
+    }
+
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .preview-wrapper {
+      background: #ece8e1;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    #outputCanvas {
+      max-width: 100%;
+      max-height: 440px;
+      width: auto;
+      height: auto;
+      border-radius: 6px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      display: block;
+    }
+
+    .canvas-meta {
+      margin-top: 8px;
+      font-size: 0.72rem;
+      color: var(--text-sub);
+    }
+
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      z-index: 30;
+    }
+
+    .nav-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--text-sub);
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .nav-btn.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .nav-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .toast {
+      position: fixed;
+      top: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: rgba(44, 40, 37, 0.94);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s;
+      z-index: 50;
+      text-align: center;
+      max-width: 90vw;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <h1>Daily ORACLE</h1>
+      <div class="header-sub">今日の1枚を静かに記録する</div>
+    </div>
+    <div id="headerBadge" class="header-badge">記録 0件</div>
+  </header>
+
+  <div id="toast" class="toast"></div>
+
+  <main class="container">
+    <!-- タブ1：記録する -->
+    <section id="panel-record" class="tab-panel active">
+      <div class="card-box">
+        <div class="form-group">
+          <div class="label-row">
+            <label class="field-label" for="inputDate">📅 日付</label>
+          </div>
+          <input type="date" id="inputDate" />
+        </div>
+      </div>
+
+      <div class="card-box">
+        <div class="form-group">
+          <div class="label-row">
+            <label class="field-label">📖 使用デッキ</label>
+            <div class="manage-actions">
+              <button type="button" class="action-link" id="btnToggleDelDeck">整理・削除</button>
+              <button type="button" class="action-link" id="btnToggleAddDeck">＋追加</button>
+            </div>
+          </div>
+          <div id="deckChips" class="chip-group"></div>
+          <div id="addDeckBox" class="add-inline-box">
+            <input type="text" id="newDeckInput" placeholder="新しいデッキ名を入力" />
+            <button type="button" id="btnSaveDeck">追加</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <div class="form-group">
+          <div class="label-row">
+            <label class="field-label">❓ 質問テーマ</label>
+            <div class="manage-actions">
+              <button type="button" class="action-link" id="btnToggleDelQuestion">整理・削除</button>
+              <button type="button" class="action-link" id="btnToggleAddQuestion">＋追加</button>
+            </div>
+          </div>
+          <div id="questionChips" class="chip-group"></div>
+          <div id="addQuestionBox" class="add-inline-box">
+            <input type="text" id="newQuestionInput" placeholder="新しい質問テーマを入力" />
+            <button type="button" id="btnSaveQuestion">追加</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <div class="form-group">
+          <div class="label-row">
+            <label class="field-label" for="inputCardName">🃏 カード名</label>
+          </div>
+          <input type="text" id="inputCardName" list="cardHistoryList" placeholder="例：アメジスト / 豊かさの扉" />
+          <datalist id="cardHistoryList"></datalist>
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label class="field-label">🌙 第一印象・ムード</label>
+          </div>
+          <div id="moodGrid" class="mood-grid"></div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label class="field-label" for="inputMotif">👀 最初に目に留まったもの（任意）</label>
+            <span id="motifCounter" class="char-counter">0/25</span>
+          </div>
+          <input type="text" id="inputMotif" maxlength="25" placeholder="例：白い翼、静かな水面、紫の結晶" />
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label class="field-label" for="inputMessage">✍️ 今の自分への一言メッセージ</label>
+            <span id="messageCounter" class="char-counter">0/80</span>
+          </div>
+          <textarea id="inputMessage" placeholder="カードから受け取った言葉を、今の自分へのメッセージとして書き留める"></textarea>
+        </div>
+
+        <div class="save-hint">✦ 書き終えたら、声に出すか心の中で読んでみましょう ✦</div>
+        <button type="button" id="btnSaveLog" class="primary-btn">今日の記録を保存する</button>
+      </div>
+    </section>
+
+    <!-- タブ2：ログ一覧 -->
+    <section id="panel-logs" class="tab-panel">
+      <div class="card-box filter-bar">
+        <input type="text" id="logSearchInput" placeholder="🔍 カード名・メッセージ・モチーフで検索" />
+        <div class="filter-row">
+          <select id="logDeckFilter">
+            <option value="">すべてのデッキ</option>
+          </select>
+          <select id="logQuestionFilter">
+            <option value="">すべての質問テーマ</option>
+          </select>
+        </div>
+      </div>
+      <div class="log-summary-bar">
+        <span>表示：<strong id="filteredLogCount">0</strong>件</span>
+        <div class="backup-links">
+          <button type="button" class="subtle-link" id="btnExportJson">ログ保存</button>
+          <span class="link-sep">/</span>
+          <button type="button" class="subtle-link" id="btnImportJson">復元</button>
+          <input type="file" id="jsonFileInput" accept=".json,application/json" style="display: none;" />
+        </div>
+      </div>
+      <div id="logListContainer"></div>
+    </section>
+
+    <!-- タブ3：画像出力 -->
+    <section id="panel-export" class="tab-panel">
+      <div class="card-box">
+        <div class="option-section">
+          <div class="option-title">📊 出力件数</div>
+          <div id="countChips" class="chip-group">
+            <button type="button" class="chip selected" data-count="1">直近1件</button>
+            <button type="button" class="chip" data-count="3">直近3件</button>
+            <button type="button" class="chip" data-count="5">直近5件</button>
+            <button type="button" class="chip" data-count="7">直近7件</button>
+            <button type="button" class="chip" data-count="30">直近30件</button>
+            <button type="button" class="chip" data-count="all">すべて</button>
+          </div>
+        </div>
+
+        <div class="option-section">
+          <div class="option-title">🔎 絞り込み（任意）</div>
+          <div class="filter-row">
+            <select id="exportDeckFilter">
+              <option value="">デッキ：すべて</option>
+            </select>
+            <select id="exportQuestionFilter">
+              <option value="">テーマ：すべて</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="option-section" id="layoutOptionSection" style="display: none;">
+          <div class="option-title">📐 レイアウト形式</div>
+          <div id="layoutChips" class="chip-group">
+            <button type="button" class="chip selected" data-layout="list">リスト型</button>
+            <button type="button" class="chip" data-layout="grid">グリッド型</button>
+          </div>
+        </div>
+
+        <div class="option-section">
+          <div class="option-title">🎨 カラーテーマ</div>
+          <div id="themeGrid" class="theme-grid">
+            <button type="button" class="theme-btn selected" data-theme="classic">
+              <span class="swatch" style="background:#f8f4ec;"></span>
+              <span>アイボリー / Classic</span>
+            </button>
+            <button type="button" class="theme-btn" data-theme="celestial">
+              <span class="swatch" style="background:#17223b;"></span>
+              <span>ミッドナイト / Celestial</span>
+            </button>
+            <button type="button" class="theme-btn" data-theme="mystic">
+              <span class="swatch" style="background:#f1edf7;"></span>
+              <span>ラベンダー / Mystic</span>
+            </button>
+            <button type="button" class="theme-btn" data-theme="bloom">
+              <span class="swatch" style="background:#f7ecee;"></span>
+              <span>ダスティローズ / Bloom</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="preview-wrapper">
+          <canvas id="outputCanvas"></canvas>
+          <div id="canvasMeta" class="canvas-meta">1350 × 1080 px</div>
+        </div>
+
+        <button type="button" id="btnDownloadImage" class="primary-btn">画像を保存する（PNG）</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button type="button" class="nav-btn active" data-tab="record">
+      <span class="nav-icon">✎</span>
+      <span>記録する</span>
+    </button>
+    <button type="button" class="nav-btn" data-tab="logs">
+      <span class="nav-icon">☰</span>
+      <span>ログ一覧</span>
+    </button>
+    <button type="button" class="nav-btn" data-tab="export">
+      <span class="nav-icon">▣</span>
+      <span>まとめ画像</span>
+    </button>
+  </nav>
+
+  <script>
+    const STORAGE_KEYS = {
+      LOGS: 'daily-oracle-logs',
+      DECKS: 'daily-oracle-decks',
+      QUESTIONS: 'daily-oracle-questions'
+    };
+
+    const FOOTER_CREDIT_TEXT = '✦ Daily ORACLE Created by tsrhtm123 ✦';
+
+    const DEFAULT_DECKS = [
+      'マジカルフェアリーオラクルカード',
+      'ザ・マップオラクルカード',
+      'エンジェルアンサーオラクルカード',
+      'パワーストーン・オラクルカード・プレミアム'
+    ];
+
+    const DEFAULT_QUESTIONS = [
+      '今日の指針',
+      '今の私に必要なメッセージ',
+      '今日のテーマ・過ごし方',
+      '手放すこと・意識すること',
+      '仕事・学び・創作',
+      '心と身体のケア',
+      '人間関係・ご縁'
+    ];
+
+    const MOODS = [
+      { id: 'hope', icon: '☀️', label: '希望・明るさ' },
+      { id: 'calm', icon: '🌙', label: '静寂・内省' },
+      { id: 'passion', icon: '🔥', label: '情熱・行動' },
+      { id: 'heal', icon: '💧', label: '癒やし・受容' },
+      { id: 'spark', icon: '⚡', label: '気づき・変化' },
+      { id: 'grow', icon: '🌱', label: '成長・可能性' },
+      { id: 'mist', icon: '🌫️', label: '迷い・揺らぎ' },
+      { id: 'mystic', icon: '✨', label: '神秘・直感' }
+    ];
+
+    const THEMES = {
+      classic: {
+        bg: '#f8f4ec',
+        bgSub: '#f1eadc',
+        cardBg: '#ffffff',
+        textMain: '#2e2924',
+        textSub: '#7a7064',
+        accent: '#8c7355',
+        border: '#dfd4c0',
+        innerBorder: '#ebe2d2',
+        pillBg: '#f2ead9',
+        pillText: '#755b30',
+        hasStars: false
+      },
+      celestial: {
+        bg: '#162038',
+        bgSub: '#1e2b4a',
+        cardBg: '#1f2d4d',
+        textMain: '#f4efe6',
+        textSub: '#aeb9d1',
+        accent: '#d9b66c',
+        border: '#384a73',
+        innerBorder: '#2c3b5e',
+        pillBg: '#253354',
+        pillText: '#e8cd82',
+        hasStars: true
+      },
+      mystic: {
+        bg: '#f2eef8',
+        bgSub: '#e7e0f2',
+        cardBg: '#ffffff',
+        textMain: '#2d263b',
+        textSub: '#746a87',
+        accent: '#7e69a8',
+        border: '#d6cce6',
+        innerBorder: '#e5def0',
+        pillBg: '#ece3f7',
+        pillText: '#5c4185',
+        hasStars: false
+      },
+      bloom: {
+        bg: '#f7ecee',
+        bgSub: '#efe0e3',
+        cardBg: '#ffffff',
+        textMain: '#38282b',
+        textSub: '#826b70',
+        accent: '#b57480',
+        border: '#e3cdd1',
+        innerBorder: '#efe0e3',
+        pillBg: '#f4e2e5',
+        pillText: '#8a4651',
+        hasStars: false
+      }
+    };
+
+    let decks = [];
+    let questions = [];
+    let logs = [];
+
+    let selectedDeck = '';
+    let selectedQuestion = '';
+    let selectedMood = MOODS[0].id;
+    let delDeckMode = false;
+    let delQuestionMode = false;
+
+    let exportCount = '1';
+    let exportLayout = 'list';
+    let exportTheme = 'classic';
+    let renderRequestId = 0;
+
+    function initStorage() {
+      const rawDecks = localStorage.getItem(STORAGE_KEYS.DECKS);
+      if (rawDecks === null) {
+        decks = [...DEFAULT_DECKS];
+        localStorage.setItem(STORAGE_KEYS.DECKS, JSON.stringify(decks));
+      } else {
+        try {
+          decks = JSON.parse(rawDecks);
+          if (!Array.isArray(decks) || decks.length === 0) decks = [...DEFAULT_DECKS];
+        } catch {
+          decks = [...DEFAULT_DECKS];
+        }
+      }
+
+      const rawQuestions = localStorage.getItem(STORAGE_KEYS.QUESTIONS);
+      if (rawQuestions === null) {
+        questions = [...DEFAULT_QUESTIONS];
+        localStorage.setItem(STORAGE_KEYS.QUESTIONS, JSON.stringify(questions));
+      } else {
+        try {
+          questions = JSON.parse(rawQuestions);
+          if (!Array.isArray(questions) || questions.length === 0) questions = [...DEFAULT_QUESTIONS];
+        } catch {
+          questions = [...DEFAULT_QUESTIONS];
+        }
+      }
+
+      const rawLogs = localStorage.getItem(STORAGE_KEYS.LOGS);
+      if (rawLogs === null) {
+        logs = [];
+        localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(logs));
+      } else {
+        try {
+          logs = JSON.parse(rawLogs);
+          if (!Array.isArray(logs)) logs = [];
+        } catch {
+          logs = [];
+        }
+      }
+
+      selectedDeck = decks.length > 0 ? decks[0] : '';
+      selectedQuestion = questions.length > 0 ? questions[0] : '';
+      updateHeaderBadge();
+    }
+
+    function saveDecks() {
+      localStorage.setItem(STORAGE_KEYS.DECKS, JSON.stringify(decks));
+    }
+
+    function saveQuestions() {
+      localStorage.setItem(STORAGE_KEYS.QUESTIONS, JSON.stringify(questions));
+    }
+
+    function saveLogs() {
+      localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(logs));
+      updateHeaderBadge();
+    }
+
+    function exportBackupJson() {
+      const payload = {
+        app: 'Daily ORACLE',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        logs,
+        decks,
+        questions
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const link = document.createElement('a');
+      link.download = `daily-oracle-backup-${stamp}.json`;
+      link.href = url;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast('バックアップJSONを保存しました');
+    }
+
+    function handleBackupFileImport(event) {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result || ''));
+          const importedLogs = Array.isArray(parsed) ? parsed : parsed.logs;
+          if (!Array.isArray(importedLogs)) {
+            showToast('有効なバックアップ形式ではありませんでした');
+            return;
+          }
+
+          const confirmed = confirm(
+            `記録 ${importedLogs.length}件で現在のデータを復元しますか？\n（現在の記録は上書きされます）`
+          );
+          if (!confirmed) return;
+
+          logs = importedLogs;
+          if (!Array.isArray(parsed) && Array.isArray(parsed.decks) && parsed.decks.length > 0) {
+            decks = parsed.decks;
+            saveDecks();
+          }
+          if (!Array.isArray(parsed) && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+            questions = parsed.questions;
+            saveQuestions();
+          }
+
+          saveLogs();
+          selectedDeck = decks.length > 0 ? decks[0] : '';
+          selectedQuestion = questions.length > 0 ? questions[0] : '';
+          renderDeckChips();
+          renderQuestionChips();
+          updateCardHistoryDatalist();
+          refreshFilterDropdowns();
+          renderLogs();
+          showToast(`記録 ${logs.length}件を復元しました`);
+        } catch {
+          showToast('JSONファイルの読み込みに失敗しました');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function updateHeaderBadge() {
+      const badge = document.getElementById('headerBadge');
+      if (badge) {
+        badge.textContent = `記録 ${logs.length}件`;
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3200);
+    }
+
+    function setTodayDate() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('inputDate').value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function renderDeckChips() {
+      const container = document.getElementById('deckChips');
+      container.innerHTML = '';
+      decks.forEach((deck) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chip';
+        if (delDeckMode) {
+          btn.classList.add('delete-mode');
+        } else if (selectedDeck === deck) {
+          btn.classList.add('selected');
+        }
+        btn.textContent = deck;
+        btn.onclick = () => {
+          if (delDeckMode) {
+            decks = decks.filter((d) => d !== deck);
+            saveDecks();
+            if (selectedDeck === deck) {
+              selectedDeck = decks.length > 0 ? decks[0] : '';
+            }
+            renderDeckChips();
+            refreshFilterDropdowns();
+          } else {
+            selectedDeck = deck;
+            renderDeckChips();
+          }
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderQuestionChips() {
+      const container = document.getElementById('questionChips');
+      container.innerHTML = '';
+      questions.forEach((q) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chip';
+        if (delQuestionMode) {
+          btn.classList.add('delete-mode');
+        } else if (selectedQuestion === q) {
+          btn.classList.add('selected');
+        }
+        btn.textContent = q;
+        btn.onclick = () => {
+          if (delQuestionMode) {
+            questions = questions.filter((item) => item !== q);
+            saveQuestions();
+            if (selectedQuestion === q) {
+              selectedQuestion = questions.length > 0 ? questions[0] : '';
+            }
+            renderQuestionChips();
+            refreshFilterDropdowns();
+          } else {
+            selectedQuestion = q;
+            renderQuestionChips();
+          }
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderMoodGrid() {
+      const grid = document.getElementById('moodGrid');
+      grid.innerHTML = '';
+      MOODS.forEach((m) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mood-btn' + (selectedMood === m.id ? ' selected' : '');
+        btn.innerHTML = `<span>${m.icon}</span><span>${m.label}</span>`;
+        btn.onclick = () => {
+          selectedMood = m.id;
+          renderMoodGrid();
+        };
+        grid.appendChild(btn);
+      });
+    }
+
+    function updateCardHistoryDatalist() {
+      const datalist = document.getElementById('cardHistoryList');
+      const uniqueCards = [...new Set(logs.map((l) => l.cardName).filter(Boolean))];
+      datalist.innerHTML = uniqueCards.map((c) => `<option value="${escapeHtml(c)}"></option>`).join('');
+    }
+
+    function refreshFilterDropdowns() {
+      const allDecks = [...new Set([...decks, ...logs.map((l) => l.deck).filter(Boolean)])];
+      const allQuestions = [...new Set([...questions, ...logs.map((l) => l.question).filter(Boolean)])];
+
+      const logDeckSel = document.getElementById('logDeckFilter');
+      const expDeckSel = document.getElementById('exportDeckFilter');
+      const prevLogDeck = logDeckSel.value;
+      const prevExpDeck = expDeckSel.value;
+
+      logDeckSel.innerHTML = `<option value="">すべてのデッキ</option>` +
+        allDecks.map((d) => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+      expDeckSel.innerHTML = `<option value="">デッキ：すべて</option>` +
+        allDecks.map((d) => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
+
+      if (allDecks.includes(prevLogDeck)) logDeckSel.value = prevLogDeck;
+      if (allDecks.includes(prevExpDeck)) expDeckSel.value = prevExpDeck;
+
+      const logQSel = document.getElementById('logQuestionFilter');
+      const expQSel = document.getElementById('exportQuestionFilter');
+      const prevLogQ = logQSel.value;
+      const prevExpQ = expQSel.value;
+
+      logQSel.innerHTML = `<option value="">すべての質問テーマ</option>` +
+        allQuestions.map((q) => `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`).join('');
+      expQSel.innerHTML = `<option value="">テーマ：すべて</option>` +
+        allQuestions.map((q) => `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`).join('');
+
+      if (allQuestions.includes(prevLogQ)) logQSel.value = prevLogQ;
+      if (allQuestions.includes(prevExpQ)) expQSel.value = prevExpQ;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderLogs() {
+      const container = document.getElementById('logListContainer');
+      const countEl = document.getElementById('filteredLogCount');
+      const keyword = (document.getElementById('logSearchInput')?.value || '').trim().toLowerCase();
+      const deckFilter = document.getElementById('logDeckFilter')?.value || '';
+      const qFilter = document.getElementById('logQuestionFilter')?.value || '';
+
+      const sorted = [...logs].sort((a, b) => (b.date + b.createdAt).localeCompare(a.date + a.createdAt));
+      const filtered = sorted.filter((item) => {
+        if (deckFilter && item.deck !== deckFilter) return false;
+        if (qFilter && item.question !== qFilter) return false;
+        if (keyword) {
+          const hay = `${item.cardName || ''} ${item.message || ''} ${item.motif || ''} ${item.deck || ''} ${item.question || ''}`.toLowerCase();
+          if (!hay.includes(keyword)) return false;
+        }
+        return true;
+      });
+
+      if (countEl) countEl.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="log-empty">該当する記録がありません。<br>「記録する」タブから今日の1枚を残してみましょう。</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered
+        .map((item) => {
+          const moodObj = MOODS.find((m) => m.id === item.mood) || MOODS[0];
+          const formattedDate = item.date.replace(/-/g, '.');
+          const qText = item.question ? `#${item.question}` : '';
+          const deckText = item.deck || '';
+          const motifHtml = item.motif
+            ? `<div class="log-motif-badge"><span>👀</span><span>${escapeHtml(item.motif)}</span></div>`
+            : '';
+
+          return `
+            <div class="log-item">
+              <div class="log-top-row">
+                <div class="log-date-badge">${escapeHtml(formattedDate)}</div>
+                ${qText ? `<div class="log-q-badge">${escapeHtml(qText)}</div>` : ''}
+                <div class="log-mood-badge">${moodObj.icon} ${escapeHtml(moodObj.label)}</div>
+                <button type="button" class="log-del-btn" onclick="deleteLog('${item.id}')" title="削除">×</button>
+              </div>
+              ${deckText ? `<div class="log-deck-name">${escapeHtml(deckText)}</div>` : ''}
+              <div class="log-card-name">${escapeHtml(item.cardName)}</div>
+              ${motifHtml}
+              <div class="log-message-box">${escapeHtml(item.message)}</div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    window.deleteLog = function (id) {
+      if (!confirm('この記録を削除しますか？')) return;
+      logs = logs.filter((l) => l.id !== id);
+      saveLogs();
+      refreshFilterDropdowns();
+      renderLogs();
+      updateCardHistoryDatalist();
+      showToast('記録を削除しました');
+    };
+
+    function wrapTextLines(ctx, text, maxWidth, maxLines = Infinity) {
+      const rawParagraphs = String(text || '').split(/\r?\n/);
+      const lines = [];
+      for (let p = 0; p < rawParagraphs.length; p++) {
+        const para = rawParagraphs[p];
+        if (!para) {
+          lines.push('');
+          if (lines.length >= maxLines) return lines;
+          continue;
+        }
+        let current = '';
+        for (const char of para) {
+          const test = current + char;
+          if (ctx.measureText(test).width > maxWidth && current.length > 0) {
+            lines.push(current);
+            if (lines.length >= maxLines) {
+              lines[lines.length - 1] = lines[lines.length - 1].slice(0, -1) + '…';
+              return lines;
+            }
+            current = char;
+          } else {
+            current = test;
+          }
+        }
+        if (current) {
+          lines.push(current);
+          if (lines.length >= maxLines) {
+            if (p < rawParagraphs.length - 1) {
+              lines[lines.length - 1] = lines[lines.length - 1].slice(0, -1) + '…';
+            }
+            return lines;
+          }
+        }
+      }
+      return lines.length > 0 ? lines : [''];
+    }
+
+    function fitTextWithEllipsis(ctx, text, maxW) {
+      const str = String(text || '');
+      if (ctx.measureText(str).width <= maxW) return str;
+      const chars = Array.from(str);
+      let acc = '';
+      for (let i = 0; i < chars.length; i++) {
+        if (ctx.measureText(acc + chars[i] + '…').width > maxW) return acc + '…';
+        acc += chars[i];
+      }
+      return acc;
+    }
+
+    function drawRoundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawCornerStar(ctx, cx, cy, size, color) {
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - size);
+      ctx.quadraticCurveTo(cx, cy, cx + size, cy);
+      ctx.quadraticCurveTo(cx, cy, cx, cy + size);
+      ctx.quadraticCurveTo(cx, cy, cx - size, cy);
+      ctx.quadraticCurveTo(cx, cy, cx, cy - size);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawSideWingAccents(ctx, W, H, th) {
+      ctx.save();
+      ctx.strokeStyle = th.border;
+      ctx.fillStyle = th.accent;
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = 1;
+
+      const midY = H / 2;
+      ctx.beginPath();
+      ctx.moveTo(48, midY);
+      ctx.lineTo(148, midY);
+      ctx.moveTo(W - 148, midY);
+      ctx.lineTo(W - 48, midY);
+      ctx.stroke();
+
+      ctx.font = '500 14px "Cormorant Garamond", serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✦', 98, midY - 24);
+      ctx.fillText('✦', 98, midY + 24);
+      ctx.fillText('✦', W - 98, midY - 24);
+      ctx.fillText('✦', W - 98, midY + 24);
+      ctx.restore();
+    }
+
+    function drawOrnamentDivider(ctx, cx, y, halfSpan, color) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.55;
+      ctx.lineWidth = 1.5;
+
+      ctx.beginPath();
+      ctx.moveTo(cx - halfSpan, y);
+      ctx.lineTo(cx - 26, y);
+      ctx.moveTo(cx + 26, y);
+      ctx.lineTo(cx + halfSpan, y);
+      ctx.stroke();
+
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = color;
+      ctx.font = '500 16px "Cormorant Garamond", serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('◇', cx, y);
+      ctx.restore();
+    }
+
+    function drawCelestialStars(ctx, W, H) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(246, 234, 198, 0.52)';
+      const starCoords = [
+        [0.06, 0.08, 3], [0.94, 0.09, 3.5], [0.12, 0.22, 2.5], [0.88, 0.24, 3],
+        [0.05, 0.48, 3], [0.95, 0.52, 3], [0.09, 0.78, 2.5], [0.91, 0.81, 3.5],
+        [0.18, 0.92, 2.5], [0.82, 0.91, 3], [0.24, 0.11, 2], [0.76, 0.12, 2]
+      ];
+      starCoords.forEach(([rx, ry, radius]) => {
+        ctx.beginPath();
+        ctx.arc(W * rx, H * ry, radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function scheduleCanvasRender() {
+      const currentId = ++renderRequestId;
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          if (currentId === renderRequestId) {
+            renderExportCanvas();
+          }
+        });
+      } else {
+        renderExportCanvas();
+      }
+    }
+
+    async function renderExportCanvas() {
+      const canvas = document.getElementById('outputCanvas');
+      const ctx = canvas.getContext('2d');
+      const theme = THEMES[exportTheme] || THEMES.classic;
+      const metaEl = document.getElementById('canvasMeta');
+
+      const deckFilter = document.getElementById('exportDeckFilter')?.value || '';
+      const qFilter = document.getElementById('exportQuestionFilter')?.value || '';
+
+      const sortedDesc = [...logs].sort((a, b) => (b.date + b.createdAt).localeCompare(a.date + a.createdAt));
+      const filteredPool = sortedDesc.filter((item) => {
+        if (deckFilter && item.deck !== deckFilter) return false;
+        if (qFilter && item.question !== qFilter) return false;
+        return true;
+      });
+
+      const sampleFallback = [
+        {
+          date: document.getElementById('inputDate').value || '2026-11-19',
+          deck: selectedDeck || DEFAULT_DECKS[0],
+          question: selectedQuestion || DEFAULT_QUESTIONS[0],
+          cardName: 'アメジスト',
+          motif: '深い紫の結晶と中央の白い光',
+          mood: selectedMood || 'mystic',
+          message: '静かな直感が澄み渡る日。\n焦らず自分のリズムを大切にすることで、\n必要な気づきが自然と訪れる。'
+        }
+      ];
+
+      let targetRecords = [];
+      if (filteredPool.length > 0) {
+        if (exportCount === 'all') {
+          targetRecords = [...filteredPool].reverse();
+        } else {
+          targetRecords = filteredPool.slice(0, parseInt(exportCount, 10)).reverse();
+        }
+      } else if (!deckFilter && !qFilter) {
+        targetRecords = sampleFallback;
+      }
+
+      if (exportCount === '1') {
+        const W = 1350;
+        const H = 1080;
+        canvas.width = W;
+        canvas.height = H;
+        metaEl.textContent = `${W} × ${H} px`;
+
+        drawSingleLandscapeCard(ctx, W, H, targetRecords[0] || null, theme);
+        return;
+      }
+
+      if (exportLayout === 'list') {
+        drawMultiListImage(ctx, canvas, targetRecords, theme);
+        metaEl.textContent = `${canvas.width} × ${canvas.height} px（リスト型・自動調整）`;
+      } else {
+        drawMultiGridImage(ctx, canvas, targetRecords, theme);
+        metaEl.textContent = `${canvas.width} × ${canvas.height} px（グリッド型・自動調整）`;
+      }
+    }
+
+    function drawSingleLandscapeCard(ctx, W, H, item, th) {
+      ctx.fillStyle = th.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      if (th.hasStars) drawCelestialStars(ctx, W, H);
+
+      const centerX = W / 2;
+      const centerY = H / 2;
+
+      drawSideWingAccents(ctx, W, H, th);
+
+      const outerSqSize = 1000;
+      const outerX = centerX - outerSqSize / 2;
+      const outerY = centerY - outerSqSize / 2;
+
+      ctx.strokeStyle = th.border;
+      ctx.lineWidth = 2;
+      drawRoundRect(ctx, outerX, outerY, outerSqSize, outerSqSize, 24);
+      ctx.stroke();
+
+      const innerSqSize = 968;
+      const innerX = centerX - innerSqSize / 2;
+      const innerY = centerY - innerSqSize / 2;
+
+      ctx.strokeStyle = th.innerBorder;
+      ctx.lineWidth = 1.2;
+      drawRoundRect(ctx, innerX, innerY, innerSqSize, innerSqSize, 16);
+      ctx.stroke();
+
+      drawCornerStar(ctx, innerX + 24, innerY + 24, 11, th.accent);
+      drawCornerStar(ctx, innerX + innerSqSize - 24, innerY + 24, 11, th.accent);
+      drawCornerStar(ctx, innerX + 24, innerY + innerSqSize - 24, 11, th.accent);
+      drawCornerStar(ctx, innerX + innerSqSize - 24, innerY + innerSqSize - 24, 11, th.accent);
+
+      const maxSafeTextWidth = 840;
+
+      if (!item) {
+        ctx.fillStyle = th.textSub;
+        ctx.font = '600 32px "Noto Serif JP", serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('該当する記録がありません', centerX, centerY);
+
+        ctx.textBaseline = 'alphabetic';
+        ctx.font = '600 19px "Cormorant Garamond", serif';
+        ctx.fillText(FOOTER_CREDIT_TEXT, centerX, 962);
+        return;
+      }
+
+      const moodObj = MOODS.find((m) => m.id === item.mood) || MOODS[0];
+      const dateFormatted = item.date.replace(/-/g, '.');
+
+      // --- [上部] 日付 ---
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = th.textSub;
+      ctx.font = '600 30px "Cormorant Garamond", serif';
+      ctx.fillText(dateFormatted, centerX, 142);
+
+      // --- [上部] 区切り記号 ◇ を中央固定し、左にムード・右に質問テーマを配置 ---
+      const moodPart = `${moodObj.icon} ${moodObj.label}`;
+      const themePart = item.question ? item.question.trim() : '';
+      const pillH = 38;
+      const pillY = 166;
+      const pillMidY = pillY + pillH / 2 + 1;
+
+      ctx.font = '600 18px "Noto Sans JP", sans-serif';
+
+      if (themePart) {
+        const sepSymbol = '◇';
+        const sepGap = 18;
+        const maxSideW = (maxSafeTextWidth - 64) / 2 - sepGap;
+        const fittedLeft = fitTextWithEllipsis(ctx, moodPart, maxSideW);
+        const fittedRight = fitTextWithEllipsis(ctx, themePart, maxSideW);
+
+        const leftW = ctx.measureText(fittedLeft).width;
+        const rightW = ctx.measureText(fittedRight).width;
+        const sidePad = 24;
+
+        const pillLeft = centerX - sepGap - leftW - sidePad;
+        const pillRight = centerX + sepGap + rightW + sidePad;
+        const pillW = pillRight - pillLeft;
+
+        ctx.fillStyle = th.pillBg;
+        drawRoundRect(ctx, pillLeft, pillY, pillW, pillH, pillH / 2);
+        ctx.fill();
+
+        ctx.strokeStyle = th.innerBorder;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = th.accent;
+        ctx.font = '600 15px "Cormorant Garamond", serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(sepSymbol, centerX, pillMidY);
+
+        ctx.fillStyle = th.pillText;
+        ctx.font = '600 18px "Noto Sans JP", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(fittedLeft, centerX - sepGap, pillMidY);
+
+        ctx.textAlign = 'left';
+        ctx.fillText(fittedRight, centerX + sepGap, pillMidY);
+      } else {
+        const fittedMood = fitTextWithEllipsis(ctx, moodPart, maxSafeTextWidth - 48);
+        const pillW = Math.min(ctx.measureText(fittedMood).width + 44, maxSafeTextWidth);
+
+        ctx.fillStyle = th.pillBg;
+        drawRoundRect(ctx, centerX - pillW / 2, pillY, pillW, pillH, pillH / 2);
+        ctx.fill();
+
+        ctx.strokeStyle = th.innerBorder;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = th.pillText;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(fittedMood, centerX, pillMidY);
+      }
+
+      // --- [中央主役] 今の自分への一言メッセージ ＋ 上下装飾ディバイダー ---
+      const topDividerY = 268;
+      const bottomDividerY = 746;
+      drawOrnamentDivider(ctx, centerX, topDividerY, 350, th.accent);
+      drawOrnamentDivider(ctx, centerX, bottomDividerY, 350, th.accent);
+
+      const noteBody = item.message || '';
+      const charLen = Array.from(noteBody).length;
+      let mainFontSize = 48;
+      let mainLineHeight = 82;
+
+      if (charLen <= 20) {
+        mainFontSize = 54;
+        mainLineHeight = 92;
+      } else if (charLen <= 38) {
+        mainFontSize = 49;
+        mainLineHeight = 84;
+      } else if (charLen <= 56) {
+        mainFontSize = 45;
+        mainLineHeight = 78;
+      } else {
+        mainFontSize = 41;
+        mainLineHeight = 72;
+      }
+
+      ctx.font = `600 ${mainFontSize}px "Noto Serif JP", serif`;
+      const wrappedLines = wrapTextLines(ctx, noteBody, maxSafeTextWidth, 4);
+
+      const messageCenterY = (topDividerY + bottomDividerY) / 2;
+      const totalBlockHeight = (wrappedLines.length - 1) * mainLineHeight;
+      const firstLineY = messageCenterY - totalBlockHeight / 2;
+
+      ctx.fillStyle = th.textMain;
+      ctx.font = `600 ${mainFontSize}px "Noto Serif JP", serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      wrappedLines.forEach((line, idx) => {
+        ctx.fillText(line, centerX, firstLineY + idx * mainLineHeight);
+      });
+
+      // --- [下部] デッキ名 → カード名 → 最初に目に留まったもの（任意） ---
+      ctx.textBaseline = 'alphabetic';
+      const hasDeck = Boolean(item.deck && item.deck.trim().length > 0);
+      const hasMotif = Boolean(item.motif && item.motif.trim().length > 0);
+
+      let metaY = hasDeck ? 788 : 812;
+
+      if (hasDeck) {
+        ctx.fillStyle = th.textSub;
+        ctx.font = '400 18px "Noto Sans JP", sans-serif';
+        ctx.fillText(fitTextWithEllipsis(ctx, item.deck.trim(), maxSafeTextWidth), centerX, metaY);
+        metaY += 42;
+      }
+
+      ctx.fillStyle = th.textMain;
+      ctx.font = '600 25px "Noto Serif JP", serif';
+      const cardLabel = `✦  ${fitTextWithEllipsis(ctx, item.cardName, maxSafeTextWidth)}  ✦`;
+      ctx.fillText(cardLabel, centerX, metaY);
+
+      if (hasMotif) {
+        metaY += 40;
+        ctx.fillStyle = th.textSub;
+        ctx.font = '500 18px "Noto Sans JP", sans-serif';
+        const motifLine = `— ${fitTextWithEllipsis(ctx, item.motif.trim(), maxSafeTextWidth)} —`;
+        ctx.fillText(motifLine, centerX, metaY);
+      }
+
+      ctx.fillStyle = th.textSub;
+      ctx.font = '600 19px "Cormorant Garamond", serif';
+      ctx.fillText(FOOTER_CREDIT_TEXT, centerX, 962);
+    }
+
+    function drawMultiListImage(ctx, canvas, items, th) {
+      const W = 1080;
+      const pad = 56;
+      const headerH = 248;
+      const footerH = 92;
+      const gap = 20;
+      const cardW = W - pad * 2;
+      const leftColW = 140;
+      const textMaxW = cardW - (leftColW + 64);
+
+      ctx.font = '400 20px "Noto Sans JP", sans-serif';
+      const cardMetrics = items.map((item) => {
+        const lines = wrapTextLines(ctx, item.message, textMaxW, 3);
+        const contentH = 112 + lines.length * 32 + 24;
+        return {
+          item,
+          lines,
+          height: Math.max(176, contentH)
+        };
+      });
+
+      const totalCardsH = cardMetrics.reduce((sum, m) => sum + m.height, 0) + Math.max(0, cardMetrics.length - 1) * gap;
+      const H = items.length === 0 ? 740 : headerH + totalCardsH + footerH;
+
+      canvas.width = W;
+      canvas.height = H;
+
+      ctx.fillStyle = th.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      if (th.hasStars) drawCelestialStars(ctx, W, H);
+
+      ctx.strokeStyle = th.border;
+      ctx.lineWidth = 2;
+      drawRoundRect(ctx, 28, 28, W - 56, H - 56, 26);
+      ctx.stroke();
+
+      drawMagazineHeader(ctx, W, items, th);
+
+      let curY = headerH;
+      if (cardMetrics.length === 0) {
+        ctx.fillStyle = th.textSub;
+        ctx.font = '600 28px "Noto Serif JP", serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('該当する記録がありません', W / 2, H / 2);
+      } else {
+        cardMetrics.forEach(({ item, lines, height }) => {
+          ctx.fillStyle = th.cardBg;
+          drawRoundRect(ctx, pad, curY, cardW, height, 20);
+          ctx.fill();
+
+          ctx.strokeStyle = th.border;
+          ctx.lineWidth = 1.5;
+          drawRoundRect(ctx, pad, curY, cardW, height, 20);
+          ctx.stroke();
+
+          const leftCenterX = pad + leftColW / 2 + 6;
+          const cardMidY = curY + height / 2;
+
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'alphabetic';
+          ctx.fillStyle = th.accent;
+          ctx.font = '600 26px "Cormorant Garamond", serif';
+          ctx.fillText(item.date.slice(5).replace('-', '/'), leftCenterX, cardMidY - 24);
+
+          const moodObj = MOODS.find((m) => m.id === item.mood) || MOODS[0];
+          ctx.fillStyle = th.pillBg;
+          ctx.beginPath();
+          ctx.arc(leftCenterX, cardMidY + 26, 32, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.font = '30px "Noto Sans JP", sans-serif';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(moodObj.icon, leftCenterX, cardMidY + 28);
+
+          ctx.strokeStyle = th.innerBorder;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(pad + leftColW + 12, curY + 24);
+          ctx.lineTo(pad + leftColW + 12, curY + height - 24);
+          ctx.stroke();
+
+          const textX = pad + leftColW + 38;
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'alphabetic';
+
+          const themeLabel = item.question || '今の私に必要なメッセージ';
+          ctx.font = '700 16px "Noto Sans JP", sans-serif';
+          const badgeW = Math.min(ctx.measureText(themeLabel).width + 22, textMaxW * 0.55);
+          ctx.fillStyle = th.pillBg;
+          drawRoundRect(ctx, textX, curY + 22, badgeW, 28, 14);
+          ctx.fill();
+          ctx.fillStyle = th.pillText;
+          ctx.fillText(fitTextWithEllipsis(ctx, themeLabel, badgeW - 14), textX + 11, curY + 41);
+
+          ctx.fillStyle = th.textSub;
+          ctx.font = '500 17px "Noto Sans JP", sans-serif';
+          ctx.fillText(fitTextWithEllipsis(ctx, item.deck || '', textMaxW - badgeW - 14), textX + badgeW + 14, curY + 41);
+
+          ctx.fillStyle = th.textMain;
+          ctx.font = '600 25px "Noto Serif JP", serif';
+          ctx.fillText(fitTextWithEllipsis(ctx, item.cardName, textMaxW), textX, curY + 84);
+
+          ctx.fillStyle = th.textMain;
+          ctx.font = '400 20px "Noto Sans JP", sans-serif';
+          lines.forEach((line, idx) => {
+            ctx.fillText(line, textX, curY + 122 + idx * 32);
+          });
+
+          curY += height + gap;
+        });
+      }
+
+      drawMultiFooterCredit(ctx, W, H, th);
+    }
+
+    function drawMultiGridImage(ctx, canvas, items, th) {
+      const count = items.length;
+      const W = 1080;
+      const pad = 52;
+      const headerH = 248;
+      const footerH = 92;
+      const gap = 20;
+
+      const cols = count <= 4 ? 2 : (count <= 9 ? 3 : 4);
+      const rows = Math.max(Math.ceil(count / cols), 1);
+      const tileH = cols === 2 ? 320 : (cols === 3 ? 300 : 280);
+      const H = count === 0 ? 740 : headerH + rows * tileH + (rows - 1) * gap + footerH;
+
+      canvas.width = W;
+      canvas.height = H;
+
+      ctx.fillStyle = th.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      if (th.hasStars) drawCelestialStars(ctx, W, H);
+
+      ctx.strokeStyle = th.border;
+      ctx.lineWidth = 2;
+      drawRoundRect(ctx, 28, 28, W - 56, H - 56, 26);
+      ctx.stroke();
+
+      drawMagazineHeader(ctx, W, items, th);
+
+      const gridAreaW = W - pad * 2;
+      const tileW = (gridAreaW - gap * (cols - 1)) / cols;
+
+      if (count === 0) {
+        ctx.fillStyle = th.textSub;
+        ctx.font = '600 28px "Noto Serif JP", serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('該当する記録がありません', W / 2, H / 2);
+      } else {
+        items.forEach((item, idx) => {
+          const col = idx % cols;
+          const row = Math.floor(idx / cols);
+          const x = pad + col * (tileW + gap);
+          const y = headerH + row * (tileH + gap);
+
+          ctx.fillStyle = th.cardBg;
+          drawRoundRect(ctx, x, y, tileW, tileH, 18);
+          ctx.fill();
+
+          ctx.strokeStyle = th.border;
+          ctx.lineWidth = 1.5;
+          drawRoundRect(ctx, x, y, tileW, tileH, 18);
+          ctx.stroke();
+
+          const innerPad = 20;
+          const innerW = tileW - innerPad * 2;
+          const moodObj = MOODS.find((m) => m.id === item.mood) || MOODS[0];
+
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'alphabetic';
+          ctx.fillStyle = th.accent;
+          ctx.font = '600 23px "Cormorant Garamond", serif';
+          ctx.fillText(item.date.slice(5).replace('-', '/'), x + innerPad, y + 38);
+
+          ctx.textAlign = 'right';
+          ctx.font = '24px "Noto Sans JP", sans-serif';
+          ctx.fillText(moodObj.icon, x + tileW - innerPad, y + 40);
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = th.textMain;
+          ctx.font = cols === 4
+            ? '600 18px "Noto Serif JP", serif'
+            : '600 21px "Noto Serif JP", serif';
+          ctx.fillText(fitTextWithEllipsis(ctx, item.cardName, innerW), x + innerPad, y + 74);
+
+          const tag = item.question || '今の私に必要なメッセージ';
+          ctx.font = '700 13px "Noto Sans JP", sans-serif';
+          const tagW = Math.min(ctx.measureText(tag).width + 16, innerW);
+          ctx.fillStyle = th.pillBg;
+          drawRoundRect(ctx, x + innerPad, y + 86, tagW, 23, 11);
+          ctx.fill();
+          ctx.fillStyle = th.pillText;
+          ctx.fillText(fitTextWithEllipsis(ctx, tag, tagW - 12), x + innerPad + 8, y + 102);
+
+          ctx.fillStyle = th.textMain;
+          const bodyFont = cols === 4 ? 15 : 18;
+          const bodyLH = cols === 4 ? 23 : 28;
+          ctx.font = `400 ${bodyFont}px "Noto Sans JP", sans-serif`;
+          const maxLines = Math.max(Math.floor((tileH - 134) / bodyLH), 2);
+          const lines = wrapTextLines(ctx, item.message, innerW, maxLines);
+          lines.forEach((line, lIdx) => {
+            ctx.fillText(line, x + innerPad, y + 138 + lIdx * bodyLH);
+          });
+        });
+      }
+
+      drawMultiFooterCredit(ctx, W, H, th);
+    }
+
+    function drawMagazineHeader(ctx, W, items, th) {
+      const cx = W / 2;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+
+      ctx.fillStyle = th.accent;
+      ctx.font = 'italic 500 20px "Cormorant Garamond", serif';
+      ctx.fillText('—  Oracle Card Reading Archive  —', cx, 84);
+
+      ctx.fillStyle = th.textMain;
+      ctx.font = '600 54px "Cormorant Garamond", serif';
+      ctx.fillText('Daily ORACLE', cx, 144);
+
+      let periodText = 'NO READINGS RECORDED';
+      if (items.length > 0) {
+        const startD = items[0].date.replace(/-/g, '.');
+        const endD = items[items.length - 1].date.replace(/-/g, '.');
+        const dateRange = startD === endD ? startD : `${startD} — ${endD}`;
+        periodText = `${dateRange}   |   ${items.length} Readings`;
+      }
+      ctx.fillStyle = th.textSub;
+      ctx.font = '600 22px "Cormorant Garamond", "Noto Sans JP", serif';
+      ctx.fillText(periodText, cx, 184);
+
+      drawOrnamentDivider(ctx, cx, 214, 380, th.innerBorder);
+    }
+
+    function drawMultiFooterCredit(ctx, W, H, th) {
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = th.textSub;
+      ctx.font = '600 19px "Cormorant Garamond", serif';
+      ctx.fillText(FOOTER_CREDIT_TEXT, W / 2, H - 42);
+    }
+
+    function bindEvents() {
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const tab = btn.dataset.tab;
+          document.querySelectorAll('.nav-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+          document.getElementById(`panel-${tab}`).classList.add('active');
+
+          if (tab === 'logs') {
+            refreshFilterDropdowns();
+            renderLogs();
+          }
+          if (tab === 'export') {
+            refreshFilterDropdowns();
+            scheduleCanvasRender();
+          }
+        });
+      });
+
+      document.getElementById('btnToggleAddDeck').addEventListener('click', () => {
+        document.getElementById('addDeckBox').classList.toggle('open');
+        document.getElementById('newDeckInput').focus();
+      });
+
+      document.getElementById('btnSaveDeck').addEventListener('click', () => {
+        const input = document.getElementById('newDeckInput');
+        const val = input.value.trim();
+        if (!val) return;
+        if (!decks.includes(val)) {
+          decks.push(val);
+          saveDecks();
+          selectedDeck = (decks.length === 1 || !selectedDeck) ? decks[0] : val;
+        }
+        input.value = '';
+        document.getElementById('addDeckBox').classList.remove('open');
+        renderDeckChips();
+        refreshFilterDropdowns();
+      });
+
+      document.getElementById('btnToggleDelDeck').addEventListener('click', (e) => {
+        delDeckMode = !delDeckMode;
+        e.target.classList.toggle('active-del', delDeckMode);
+        e.target.textContent = delDeckMode ? '完了' : '整理・削除';
+        renderDeckChips();
+      });
+
+      document.getElementById('btnToggleAddQuestion').addEventListener('click', () => {
+        document.getElementById('addQuestionBox').classList.toggle('open');
+        document.getElementById('newQuestionInput').focus();
+      });
+
+      document.getElementById('btnSaveQuestion').addEventListener('click', () => {
+        const input = document.getElementById('newQuestionInput');
+        const val = input.value.trim().replace(/^#+/, '');
+        if (!val) return;
+        if (!questions.includes(val)) {
+          questions.push(val);
+          saveQuestions();
+          selectedQuestion = (questions.length === 1 || !selectedQuestion) ? questions[0] : val;
+        }
+        input.value = '';
+        document.getElementById('addQuestionBox').classList.remove('open');
+        renderQuestionChips();
+        refreshFilterDropdowns();
+      });
+
+      document.getElementById('btnToggleDelQuestion').addEventListener('click', (e) => {
+        delQuestionMode = !delQuestionMode;
+        e.target.classList.toggle('active-del', delQuestionMode);
+        e.target.textContent = delQuestionMode ? '完了' : '整理・削除';
+        renderQuestionChips();
+      });
+
+      const motifInput = document.getElementById('inputMotif');
+      const motifCounter = document.getElementById('motifCounter');
+      motifInput.addEventListener('input', () => {
+        motifCounter.textContent = `${motifInput.value.length}/25`;
+      });
+
+      const msgInput = document.getElementById('inputMessage');
+      const msgCounter = document.getElementById('messageCounter');
+      msgInput.addEventListener('input', () => {
+        const len = msgInput.value.length;
+        msgCounter.textContent = `${len}/80`;
+        msgCounter.classList.toggle('over', len > 80);
+      });
+
+      document.getElementById('btnSaveLog').addEventListener('click', () => {
+        const date = document.getElementById('inputDate').value;
+        const cardName = document.getElementById('inputCardName').value.trim();
+        const motif = motifInput.value.trim();
+        const message = msgInput.value.trim();
+
+        if (!cardName) {
+          showToast('カード名を入力してください');
+          document.getElementById('inputCardName').focus();
+          return;
+        }
+        if (!message) {
+          showToast('今の自分への一言メッセージを入力してください');
+          msgInput.focus();
+          return;
+        }
+
+        const newLog = {
+          id: String(Date.now()),
+          createdAt: new Date().toISOString(),
+          date: date || new Date().toISOString().slice(0, 10),
+          deck: selectedDeck,
+          question: selectedQuestion,
+          cardName,
+          mood: selectedMood,
+          motif,
+          message
+        };
+
+        logs.push(newLog);
+        saveLogs();
+        updateCardHistoryDatalist();
+        refreshFilterDropdowns();
+
+        document.getElementById('inputCardName').value = '';
+        motifInput.value = '';
+        motifCounter.textContent = '0/25';
+        msgInput.value = '';
+        msgCounter.textContent = '0/80';
+        msgCounter.classList.remove('over');
+        selectedDeck = decks.length > 0 ? decks[0] : '';
+        selectedQuestion = questions.length > 0 ? questions[0] : '';
+        renderDeckChips();
+        renderQuestionChips();
+
+        showToast('記録しました。カードからのメッセージが、今日のお守りになりますように。');
+      });
+
+      document.getElementById('logSearchInput').addEventListener('input', renderLogs);
+      document.getElementById('logDeckFilter').addEventListener('change', renderLogs);
+      document.getElementById('logQuestionFilter').addEventListener('change', renderLogs);
+
+      document.getElementById('btnExportJson').addEventListener('click', exportBackupJson);
+      document.getElementById('btnImportJson').addEventListener('click', () => {
+        document.getElementById('jsonFileInput').click();
+      });
+      document.getElementById('jsonFileInput').addEventListener('change', handleBackupFileImport);
+
+      document.getElementById('exportDeckFilter').addEventListener('change', scheduleCanvasRender);
+      document.getElementById('exportQuestionFilter').addEventListener('change', scheduleCanvasRender);
+
+      document.querySelectorAll('#countChips .chip').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#countChips .chip').forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          exportCount = btn.dataset.count;
+
+          const layoutSection = document.getElementById('layoutOptionSection');
+          layoutSection.style.display = exportCount === '1' ? 'none' : 'block';
+          scheduleCanvasRender();
+        });
+      });
+
+      document.querySelectorAll('#layoutChips .chip').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#layoutChips .chip').forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          exportLayout = btn.dataset.layout;
+          scheduleCanvasRender();
+        });
+      });
+
+      document.querySelectorAll('#themeGrid .theme-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#themeGrid .theme-btn').forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          exportTheme = btn.dataset.theme;
+          scheduleCanvasRender();
+        });
+      });
+
+      document.getElementById('btnDownloadImage').addEventListener('click', () => {
+        const canvas = document.getElementById('outputCanvas');
+        const link = document.createElement('a');
+        const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const suffix = exportCount === '1' ? 'card-1350x1080' : exportLayout;
+        link.download = `daily-oracle-${suffix}-${stamp}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    initStorage();
+    setTodayDate();
+    renderDeckChips();
+    renderQuestionChips();
+    renderMoodGrid();
+    updateCardHistoryDatalist();
+    refreshFilterDropdowns();
+    bindEvents();
+  </script>
+</body>
+</html>
