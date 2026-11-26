@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ideaput cafe — Ideas brewed into creations.</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Classic Serif for Cafe Headings & Rounded Gothic for Japanese -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=Lora:ital,wght@0,500;0,600;0,700;1,400&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti for celebratory moments -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    // Safely configure Tailwind CSS when available in the runtime environment
+    try {
+      if (typeof window.tailwind !== 'undefined') {
+        window.tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                cream: '#FAF6F0',
+                latte: '#F2EAE0',
+                latteDark: '#E5D8C8',
+                caramel: '#C88A4B',
+                caramelHover: '#B5773A',
+                mocha: '#6B4423',
+                espresso: '#3B2314',
+                espressoLight: '#6A4E3D',
+                nightBg: '#1B110C',
+                nightCard: '#2B1C15',
+                nightText: '#F2EAE0',
+              },
+              fontFamily: {
+                serif: ['"Fraunces"', '"Lora"', 'serif'],
+                sans: ['"Zen Maru Gothic"', 'sans-serif'],
+              },
+              boxShadow: {
+                'cafe': '0 6px 20px -4px rgba(59, 35, 20, 0.07)',
+                'cafe-hover': '0 10px 25px -4px rgba(59, 35, 20, 0.12)',
+                'stamp': 'inset 0 2px 4px rgba(59, 35, 20, 0.06)',
+              }
+            }
+          }
+        };
+      }
+    } catch (e) {
+      console.error('Tailwind config error:', e);
+    }
+  </script>
+
+  <style>
+    /* Base typography and smooth theme transitions */
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      background-color: #FAF6F0;
+      color: #3B2314;
+      transition: background-color 0.6s ease, color 0.6s ease;
+    }
+
+    body.night-mode {
+      background-color: #1B110C;
+      color: #F2EAE0;
+    }
+
+    /* Subtle cafe paper texture */
+    .paper-texture {
+      background-image: radial-gradient(rgba(107, 68, 35, 0.045) 1px, transparent 0);
+      background-size: 20px 20px;
+    }
+
+    /* Tablecloth & tray surfaces for Waffle Showcase */
+    .stage-bg-ceramic {
+      background-color: #FAF6F0;
+    }
+    .stage-bg-wood {
+      background-color: #E7D3BC;
+      background-image: repeating-linear-gradient(
+        0deg,
+        rgba(107, 68, 35, 0.055) 0px,
+        rgba(107, 68, 35, 0.055) 2px,
+        transparent 2px,
+        transparent 14px
+      );
+    }
+    .stage-bg-gingham {
+      background-color: #FAF6F0;
+      background-image:
+        linear-gradient(90deg, rgba(200, 138, 75, 0.13) 50%, transparent 50%),
+        linear-gradient(rgba(200, 138, 75, 0.13) 50%, transparent 50%);
+      background-size: 26px 26px;
+    }
+    .stage-bg-midnight {
+      background-color: #2B201A;
+      background-image: radial-gradient(rgba(200, 138, 75, 0.14) 1px, transparent 0);
+      background-size: 18px 18px;
+    }
+
+    /* Smooth accordion transition */
+    .accordion-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+      opacity: 0;
+    }
+    .accordion-panel.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+    .accordion-inner {
+      overflow: hidden;
+    }
+
+    /* Stamp Pop Animation */
+    @keyframes stampIn {
+      0% { transform: scale(2.2) rotate(-18deg); opacity: 0; }
+      60% { transform: scale(0.92) rotate(-5deg); opacity: 1; }
+      100% { transform: scale(1) rotate(-6deg); opacity: 1; }
+    }
+    .animate-stamp {
+      animation: stampIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Gentle floating waffle */
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-4px); }
+    }
+    .waffle-float {
+      animation: gentleFloat 4.5s ease-in-out infinite;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF6F0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D8C7B4;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C88A4B;
+    }
+  </style>
+</head>
+<body class="paper-texture min-h-screen flex flex-col selection:bg-caramel/20">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Night Mode Banner (Visible when cafe is closed for the day) -->
+  <div id="night-overlay" class="hidden fixed inset-0 z-40 bg-[#180E0A]/92 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-500">
+    <div class="bg-[#2B1C15] border-2 border-[#543A2C] text-[#F2EAE0] max-w-md w-full rounded-3xl p-8 text-center shadow-2xl relative">
+      <div class="inline-block px-4 py-1 rounded-full border border-caramel/50 bg-[#1F140E] text-caramel font-serif italic text-xs tracking-widest mb-4">
+        — CLOSED FOR TONIGHT —
+      </div>
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#3B2314] flex items-center justify-center text-caramel shadow-inner">
+        <i data-lucide="moon" class="w-8 h-8"></i>
+      </div>
+      <h2 class="text-xl sm:text-2xl font-bold mb-3 leading-snug">またのご来店をお待ちしております。ゆっくり休んでくださいね。</h2>
+      <p class="text-sm text-[#D6C7B8] leading-relaxed mb-6">
+        コーヒーを片手にアイデアを味わう時間は、それだけで素敵なひとときです。<br>
+        またいつでもふらっとお立ち寄りください。
+      </p>
+      <button type="button" onclick="toggleNightMode(false)" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-caramel hover:bg-caramelHover text-white font-medium text-sm transition shadow-md cursor-pointer">
+        <i data-lucide="coffee" class="w-4 h-4"></i>
+        <span>カフェの看板を OPEN に戻す</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Header: Brand on Left, Recipe Book + オーダーする grouped on Right -->
+  <header class="sticky top-0 z-30 bg-cream/90 backdrop-blur-md border-b border-latteDark/70">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <!-- Brand Logo & Subtitles -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-2xl bg-mocha text-cream flex items-center justify-center shadow-sm shrink-0">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+            <line x1="6" y1="2" x2="6" y2="4"/>
+            <line x1="10" y1="2" x2="10" y2="4"/>
+            <line x1="14" y1="2" x2="14" y2="4"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2.5">
+            <h1 class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-espresso">ideaput cafe</h1>
+            <span class="hidden sm:inline-block font-serif italic text-xs text-mocha/85">Ideas brewed into creations.</span>
+          </div>
+          <p class="text-xs text-espressoLight">思いつきを、ゆっくり、かたちに。</p>
+        </div>
+      </div>
+
+      <!-- Right Actions: Recipe Book right next to オーダーする -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button type="button" onclick="openRecipeBookModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-latte hover:bg-latteDark text-espresso text-xs sm:text-sm font-medium transition cursor-pointer" title="完成品レシピブック">
+          <i data-lucide="book-open" class="w-4 h-4 text-mocha"></i>
+          <span>Recipe Book</span>
+        </button>
+
+        <button type="button" onclick="openAddModal()" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-caramel hover:bg-caramelHover text-white text-xs sm:text-sm font-bold shadow-sm hover:shadow transition transform active:scale-95 cursor-pointer">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>オーダーする</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard: Cafe Counter -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-7 sm:py-9">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+
+      <!-- LEFT COLUMN: My Table (Waffle Growth & Visit Stamp Card) -->
+      <div class="lg:col-span-5 flex flex-col gap-6">
+
+        <!-- 1. Today's Plate (Square Waffle Growth System + Collapsed Accordion Customizer) -->
+        <section class="bg-latte rounded-3xl p-6 shadow-cafe border border-latteDark/60 relative overflow-hidden">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div>
+              <span class="font-serif italic text-xs text-caramel font-semibold tracking-wider uppercase block">Dessert Showcase</span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <h2 class="font-serif text-xl font-bold text-espresso">Today's Plate</h2>
+                <button type="button" onclick="openWaffleGuideModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-cream hover:bg-white border border-latteDark text-[11px] font-bold text-mocha shadow-2xs transition cursor-pointer" title="ワッフルの成長過程を見る">
+                  <span>📖 成長図鑑</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- TOTAL / MONTHLY Toggle -->
+            <div class="bg-cream/85 p-1 rounded-full border border-latteDark flex text-xs font-bold">
+              <button type="button" id="tab-total" onclick="switchPlateMode('total')" class="px-3 py-1 rounded-full bg-mocha text-cream transition cursor-pointer">
+                TOTAL
+              </button>
+              <button type="button" id="tab-monthly" onclick="switchPlateMode('monthly')" class="px-3 py-1 rounded-full text-espressoLight hover:text-espresso transition cursor-pointer">
+                MONTHLY
+              </button>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-espressoLight mb-3.5 leading-relaxed">
+            ☕ コーヒーを飲みながら、焼き上がっていくワッフルを待つお皿です。
+          </p>
+
+          <!-- Waffle Illustration Stage -->
+          <div id="waffle-stage-box" class="stage-bg-ceramic rounded-2xl p-5 border border-latteDark/60 flex flex-col items-center justify-center relative transition-colors duration-300">
+            <div class="w-full flex justify-between items-center text-xs text-espressoLight mb-1">
+              <span id="plate-mode-label" class="font-medium bg-cream/90 text-espresso px-2.5 py-0.5 rounded-full shadow-2xs">これまでの歴史 (Total)</span>
+              <span class="font-serif font-bold text-base text-mocha bg-cream/90 px-2.5 py-0.5 rounded-full shadow-2xs"><span id="waffle-count-display">0</span> <span class="text-xs font-sans font-normal">plates</span></span>
+            </div>
+
+            <!-- Dynamic Square SVG Waffle -->
+            <div id="waffle-svg-container" class="w-56 h-44 flex items-center justify-center my-1 waffle-float cursor-pointer" onclick="openWaffleGuideModal()" title="クリックで成長図鑑を開く">
+              <!-- Injected by JS -->
+            </div>
+
+            <!-- Current Stage Title & Progress -->
+            <div class="text-center mt-1 w-full bg-cream/95 backdrop-blur-2xs rounded-xl p-2.5 border border-latteDark/50">
+              <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-latte text-espresso text-xs font-bold mb-1">
+                <span id="waffle-stage-emoji">🍽️</span>
+                <span id="waffle-stage-name">お皿を用意しました</span>
+              </div>
+              <p id="waffle-next-hint" class="text-[11px] text-espressoLight">
+                コーヒーを味わって最初の1つをごちそうさますると、プレーンワッフルが焼き上がります
+              </p>
+            </div>
+          </div>
+
+          <!-- Accordion: Dough & Table Customization (Collapsed by default, status on new line below heading) -->
+          <div class="mt-4 pt-3 border-t border-latteDark/60">
+            <button type="button" id="customizer-accordion-btn" onclick="toggleCustomizerAccordion()" aria-expanded="false" class="w-full flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-cream/60 transition text-left cursor-pointer">
+              <div class="flex flex-col items-start gap-1">
+                <span class="text-xs font-bold text-espresso flex items-center gap-1.5">
+                  <i data-lucide="palette" class="w-3.5 h-3.5 text-caramel"></i>
+                  <span>🎨 生地＆テーブル着せ替え</span>
+                </span>
+                <span id="customizer-unlocked-pill" class="text-[10px] font-normal px-2 py-0.5 rounded-full bg-cream text-espressoLight border border-latteDark/60"></span>
+              </div>
+              <i id="customizer-chevron" data-lucide="chevron-down" class="w-4 h-4 text-espressoLight transition-transform duration-300 shrink-0"></i>
+            </button>
+
+            <div id="customizer-accordion-panel" class="accordion-panel">
+              <div class="accordion-inner">
+                <div id="customizer-controls" class="pt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                  <!-- Injected by JS from DOUGH_STYLES & TABLE_STYLES -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Shop Stamp Card (Date-stamped Loyalty Card + 10-Visit Coffee Fortune Corner) -->
+        <section class="bg-latte rounded-3xl p-6 shadow-cafe border border-latteDark/60 relative">
+          <div class="flex items-start justify-between mb-2.5">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-serif italic text-xs text-caramel font-semibold tracking-wider uppercase">Loyalty Card</span>
+                <span id="current-card-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-mocha text-cream">Card #1</span>
+              </div>
+              <h2 class="font-serif text-xl font-bold text-espresso flex items-center gap-2 mt-0.5">
+                Cafe Stamp Card
+                <span class="font-sans text-xs font-normal text-espressoLight">来店スタンプ</span>
+              </h2>
+            </div>
+            <div class="text-right">
+              <span class="text-[11px] text-espressoLight block">満了カード</span>
+              <span id="completed-cards-count" class="font-serif font-bold text-mocha text-sm">0 枚達成</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-espressoLight mb-3.5 leading-relaxed">
+            コーヒーを飲みながら立ち寄った日のスタンプをポンッ。10個貯まると<strong class="text-mocha">「今日のコーヒー占い」＆新しい生地・着せ替え</strong>が解放されます！
+          </p>
+
+          <!-- 10 Stamp Grid with Dates -->
+          <div id="stamp-grid" class="grid grid-cols-5 gap-2 bg-cream p-3 rounded-2xl border border-latteDark/60 mb-3.5">
+            <!-- 10 slots generated by JS -->
+          </div>
+
+          <!-- Stamp Action Button -->
+          <div class="flex flex-col gap-2">
+            <button type="button" id="stamp-today-btn" onclick="stampToday()" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-mocha hover:bg-espresso text-cream text-xs sm:text-sm font-bold transition shadow-sm cursor-pointer">
+              <i data-lucide="stamp" class="w-4 h-4 text-caramel"></i>
+              <span id="stamp-btn-text">今日の来店スタンプを押す</span>
+            </button>
+
+            <div class="px-1 pt-0.5">
+              <span id="fortune-status-hint" class="text-[11px] text-espressoLight">
+                🔒 10スタンプで「今日のコーヒー占い」解放
+              </span>
+            </div>
+          </div>
+          <p id="stamp-message" class="text-[11px] text-mocha text-center mt-2 min-h-[16px] font-medium"></p>
+
+          <!-- Unlocked Corner: Today's Coffee Fortune (10-Kind) -->
+          <div id="coffee-fortune-corner" class="hidden mt-4 pt-4 border-t border-latteDark/70">
+            <div class="bg-cream rounded-2xl p-4 border border-caramel/40 shadow-2xs">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-bold text-mocha flex items-center gap-1.5">
+                  <span>☕ 今日のコーヒー占い</span>
+                </span>
+                <button type="button" onclick="redrawCoffeeFortune()" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-latte hover:bg-latteDark text-espresso transition cursor-pointer" title="全10種から別の1杯を引き直す">
+                  <i data-lucide="refresh-cw" class="w-3 h-3 text-caramel"></i>
+                  <span>別の1杯を引く</span>
+                </button>
+              </div>
+              <div id="fortune-card-body">
+                <!-- Injected by JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Cafe Menu Board (Brewing Now, Idea Menu, Our Specials) -->
+      <div class="lg:col-span-7 flex flex-col gap-6">
+
+        <!-- 1. Brewing Now (In Progress - Max 3 recommended) -->
+        <section class="bg-latte rounded-3xl p-6 shadow-cafe border border-latteDark/60">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div>
+              <span class="font-serif italic text-xs text-caramel font-semibold tracking-wider uppercase block">Countertop</span>
+              <h2 class="font-serif text-xl font-bold text-espresso flex items-center gap-2">
+                Brewing Now
+                <span class="font-sans text-xs font-normal text-espressoLight">じっくり味わっているひと品</span>
+              </h2>
+            </div>
+            <span id="brewing-counter-badge" class="text-xs px-3 py-1 rounded-full bg-cream border border-latteDark text-espressoLight font-medium">
+              0 / 3 cups recommended
+            </span>
+          </div>
+
+          <p class="text-[11px] text-espressoLight mb-4 leading-relaxed">
+            コーヒーを片手にアイデアをじっくり味わい、焼き上がったワッフルを待ちましょう。
+          </p>
+
+          <div id="brewing-limit-notice" class="hidden mb-4 px-4 py-2.5 rounded-2xl bg-caramel/15 border border-caramel/30 text-xs text-espresso flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-caramel shrink-0"></i>
+            <span>テーブルが少し賑やかになってきました。コーヒーを飲みながら1つずつゆっくり味わいましょう☕</span>
+          </div>
+
+          <!-- Brewing Cards List -->
+          <div id="brewing-list" class="flex flex-col gap-3.5">
+            <!-- Injected by JS -->
+          </div>
+        </section>
+
+        <!-- 2. Idea Menu (Stock / Beans) -->
+        <section class="bg-latte rounded-3xl p-6 shadow-cafe border border-latteDark/60">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <span class="font-serif italic text-xs text-caramel font-semibold tracking-wider uppercase block">Stock & Beans</span>
+              <h2 class="font-serif text-xl font-bold text-espresso flex items-center gap-2">
+                Idea Menu
+                <span class="font-sans text-xs font-normal text-espressoLight">これから味わうアイデア帳</span>
+              </h2>
+            </div>
+            <span id="beans-count-badge" class="text-xs px-3 py-1 rounded-full bg-cream border border-latteDark text-espressoLight font-medium">
+              0 items
+            </span>
+          </div>
+
+          <!-- Beans List -->
+          <div id="beans-list" class="bg-cream rounded-2xl p-4 border border-latteDark/60 divide-y divide-latteDark/50">
+            <!-- Injected by JS -->
+          </div>
+        </section>
+
+        <!-- 3. Our Specials (Recently Completed Creations - Clickable for Reflection) -->
+        <section class="bg-latte rounded-3xl p-6 shadow-cafe border border-latteDark/60">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <span class="font-serif italic text-xs text-caramel font-semibold tracking-wider uppercase block">Hall of Fame</span>
+              <h2 class="font-serif text-xl font-bold text-espresso flex items-center gap-2">
+                Our Specials
+                <span class="font-sans text-xs font-normal text-espressoLight">ごちそうさま済みのひと皿（タップで振り返り）</span>
+              </h2>
+            </div>
+            <button type="button" onclick="openRecipeBookModal()" class="text-xs font-bold text-mocha hover:text-caramel underline decoration-caramel/50 underline-offset-4 transition cursor-pointer">
+              すべて見る →
+            </button>
+          </div>
+
+          <div id="specials-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- Injected by JS -->
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Compact 3-Tier Footer Layout -->
+  <footer class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-5 pb-6 mt-8 border-t border-latteDark/60 text-xs text-espressoLight flex flex-col gap-2.5">
+    <!-- Tier 1 (Top): ⚙️ カフェのカスタム設定 Accordion Trigger & Panel -->
+    <div class="flex flex-col items-center">
+      <button type="button" id="footer-settings-btn" onclick="toggleFooterSettingsAccordion()" aria-expanded="false" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-latte hover:bg-latteDark text-espresso font-medium transition cursor-pointer" title="ジャンルや気分の選択肢をカスタマイズ・全データ初期化">
+        <i data-lucide="settings" class="w-3.5 h-3.5 text-mocha"></i>
+        <span>⚙️ カフェのカスタム設定</span>
+        <i id="footer-settings-chevron" data-lucide="chevron-down" class="w-3.5 h-3.5 text-espressoLight transition-transform duration-300"></i>
+      </button>
+
+      <!-- Collapsible Settings Accordion Panel -->
+      <div id="footer-settings-panel" class="accordion-panel w-full">
+        <div class="accordion-inner">
+          <div class="mt-2.5 bg-latte/75 rounded-2xl p-4 sm:p-5 border border-latteDark/70 shadow-2xs">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-latteDark/60">
+              <div>
+                <span class="font-serif italic text-[11px] text-caramel font-semibold">Custom Menu Settings</span>
+                <h3 class="text-sm font-bold text-espresso">ジャンル・今の気分のカスタマイズ</h3>
+              </div>
+              <button type="button" onclick="resetCustomOptionsToDefault()" class="text-[11px] text-espressoLight hover:text-mocha underline decoration-dotted cursor-pointer">
+                初期設定の選択肢に戻す
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Custom Categories Editor -->
+              <div class="bg-cream rounded-xl p-3.5 border border-latteDark/60">
+                <label class="block text-xs font-bold text-espresso mb-2">📂 ジャンル (Category)</label>
+                <div id="settings-categories-list" class="flex flex-wrap gap-1.5 mb-2.5">
+                  <!-- Injected by JS -->
+                </div>
+                <form onsubmit="handleAddCustomCategory(event)" class="flex items-center gap-2">
+                  <input type="text" id="new-category-input" maxlength="20" placeholder="新しいジャンルを追加..." class="flex-1 px-3 py-1.5 rounded-xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-xs text-espresso" />
+                  <button type="submit" class="px-3 py-1.5 rounded-xl bg-mocha hover:bg-espresso text-cream text-xs font-bold transition cursor-pointer shrink-0">
+                    追加
+                  </button>
+                </form>
+              </div>
+
+              <!-- Custom Moods Editor -->
+              <div class="bg-cream rounded-xl p-3.5 border border-latteDark/60">
+                <label class="block text-xs font-bold text-espresso mb-2">☕ 今の気分 (Mood)</label>
+                <div id="settings-moods-list" class="flex flex-wrap gap-1.5 mb-2.5">
+                  <!-- Injected by JS -->
+                </div>
+                <form onsubmit="handleAddCustomMood(event)" class="flex items-center gap-2">
+                  <input type="text" id="new-mood-input" maxlength="20" placeholder="例：🌸 のんびり" class="flex-1 px-3 py-1.5 rounded-xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-xs text-espresso" />
+                  <button type="submit" class="px-3 py-1.5 rounded-xl bg-mocha hover:bg-espresso text-cream text-xs font-bold transition cursor-pointer shrink-0">
+                    追加
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 2 (Middle): すべて0から始める | サンプルに戻す | 記録を保存 | 復元 -->
+    <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px]">
+      <button type="button" onclick="resetAllDataToZero()" class="hover:text-red-700 transition-colors underline decoration-latteDark underline-offset-4 cursor-pointer">
+        すべて0から始める
+      </button>
+      <span class="text-latteDark">|</span>
+      <button type="button" onclick="resetSampleData()" class="hover:text-espresso transition-colors underline decoration-latteDark underline-offset-4 cursor-pointer">
+        サンプルに戻す
+      </button>
+      <span class="text-latteDark">|</span>
+      <button type="button" onclick="exportBackupData()" class="inline-flex items-center gap-1 hover:text-espresso transition-colors underline decoration-latteDark underline-offset-4 cursor-pointer" title="全データをバックアップファイルとして保存">
+        <i data-lucide="download" class="w-3 h-3 text-mocha"></i>
+        <span>記録を保存</span>
+      </button>
+      <span class="text-latteDark">|</span>
+      <label class="inline-flex items-center gap-1 hover:text-espresso transition-colors underline decoration-latteDark underline-offset-4 cursor-pointer" title="保存したバックアップファイルから復元">
+        <i data-lucide="upload" class="w-3 h-3 text-mocha"></i>
+        <span>復元</span>
+        <input id="footer-import-input" type="file" accept=".json,application/json" onchange="importBackupData(event)" class="hidden" />
+      </label>
+    </div>
+
+    <!-- Tier 3 (Bottom): Close Cafe & Concise Footer Caption -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1.5 border-t border-latteDark/40 text-[11px]">
+      <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+        <span class="font-serif font-bold text-mocha text-xs">ideaput cafe</span>
+        <span>•</span>
+        <span>ログイン不要・ブラウザに自動保存</span>
+      </div>
+
+      <button type="button" onclick="toggleNightMode(true)" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-espresso text-cream hover:bg-mocha font-medium transition shadow-2xs cursor-pointer">
+        <i data-lucide="moon" class="w-3.5 h-3.5 text-caramel"></i>
+        <span>Close Cafe</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- MODAL 1: Add / Edit Idea (Order Slip Style) -->
+  <div id="idea-modal" class="hidden fixed inset-0 z-50 bg-espresso/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-latteDark rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-3 mb-5 border-b-2 border-dashed border-latteDark">
+        <div>
+          <span class="font-serif italic text-xs text-caramel font-semibold">Order Sheet</span>
+          <h3 id="modal-title" class="font-serif text-xl font-bold text-espresso">オーダーする <span class="font-sans text-xs font-normal text-espressoLight">(注文伝票)</span></h3>
+        </div>
+        <button type="button" onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-latte hover:bg-latteDark flex items-center justify-center text-espresso transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="idea-form" onsubmit="handleSaveIdea(event)" class="flex flex-col gap-4">
+        <input type="hidden" id="edit-idea-id" value="" />
+
+        <div>
+          <label class="block text-xs font-bold text-espresso mb-1.5">味わいたいアイデア・作りたいもの <span class="text-caramel">*</span></label>
+          <input type="text" id="idea-title" required placeholder="例：手書き風のレシピカードを作る" class="w-full px-4 py-2.5 rounded-xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-sm text-espresso" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-espresso mb-1.5">ジャンル (Category)</label>
+            <select id="idea-category" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-sm text-espresso">
+              <!-- Populated dynamically from appState.customOptions.categories -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-espresso mb-1.5">今の気分 (Mood)</label>
+            <select id="idea-mood" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-sm text-espresso">
+              <!-- Populated dynamically from appState.customOptions.moods -->
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-espresso mb-1.5">最初の状態</label>
+          <select id="idea-status" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-sm text-espresso">
+            <option value="beans">🫘 Idea Menu に控える</option>
+            <option value="drip">☕ いまの1杯として味わう</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-espresso mb-1.5">ひとことメモ（任意）</label>
+          <textarea id="idea-note" rows="3" placeholder="コーヒーを飲みながら思い浮かんだこと、気楽にメモ..." class="w-full px-4 py-2.5 rounded-xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-sm text-espresso resize-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 mt-2 pt-3 border-t border-latteDark/60">
+          <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-full text-xs font-bold text-espressoLight hover:bg-latte transition cursor-pointer">
+            キャンセル
+          </button>
+          <button type="submit" class="px-6 py-2.5 rounded-full bg-caramel hover:bg-caramelHover text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer">
+            オーダーする
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Serve Celebration & Reflection Modal -->
+  <div id="serve-modal" class="hidden fixed inset-0 z-50 bg-espresso/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-caramel/50 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl text-center">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-caramel/15 text-caramel flex items-center justify-center">
+        <i data-lucide="sparkles" class="w-7 h-7"></i>
+      </div>
+      <span class="font-serif italic text-xs text-caramel font-semibold tracking-wider uppercase">Bon Appétit!</span>
+      <h3 class="text-xl font-bold text-espresso mt-0.5 mb-2">ごちそうさまでした！</h3>
+      <p id="serve-item-title" class="text-sm font-bold text-mocha bg-latte py-2 px-4 rounded-xl mb-4"></p>
+
+      <div class="text-left mb-5">
+        <label class="block text-xs font-bold text-espresso mb-1.5">味わってみた感想・振り返りメモ（後からいつでも編集できます）</label>
+        <textarea id="serve-reflection" rows="2" placeholder="例：コーヒーを飲みながらじっくり味わえて大満足！次は色違いも試したい。" class="w-full px-4 py-2.5 rounded-xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-sm text-espresso resize-none"></textarea>
+      </div>
+
+      <div class="flex items-center justify-center gap-3">
+        <button type="button" onclick="closeServeModal()" class="px-4 py-2.5 rounded-full text-xs font-bold text-espressoLight hover:bg-latte transition cursor-pointer">
+          もう少し味わう
+        </button>
+        <button type="button" onclick="confirmServeIdea()" class="px-5 py-2.5 rounded-full bg-caramel hover:bg-caramelHover text-white text-[11px] font-bold shadow-md transition cursor-pointer">
+          ごちそうさま 🧇
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Waffle Growth Guide (成長図鑑) -->
+  <div id="waffle-guide-modal" class="hidden fixed inset-0 z-50 bg-espresso/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-cream border border-latteDark rounded-3xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-5 sm:p-6 bg-latte border-b border-latteDark flex items-center justify-between">
+        <div>
+          <span class="font-serif italic text-xs text-caramel font-semibold">Waffle Evolution Guide</span>
+          <h3 class="font-serif text-xl sm:text-2xl font-bold text-espresso flex items-center gap-2">
+            ワッフル成長図鑑
+            <span class="font-sans text-xs font-normal text-espressoLight">ごちそうさまの数に応じて焼き上がり＆トッピングが育ちます</span>
+          </h3>
+        </div>
+        <button type="button" onclick="closeWaffleGuideModal()" class="w-9 h-9 rounded-full bg-cream hover:bg-latteDark flex items-center justify-center text-espresso transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="waffle-guide-grid" class="p-5 sm:p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- 7 stages (0, 1, 2, 3, 4, 5, 6) injected by JS -->
+      </div>
+
+      <div class="p-4 bg-latte/60 border-t border-latteDark text-center text-xs text-espressoLight">
+        ※ 現在選択中のワッフル生地カラーが図鑑にも反映されています
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: 10-Stamp Celebration & Coffee Fortune Modal -->
+  <div id="fortune-modal" class="hidden fixed inset-0 z-50 bg-espresso/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-caramel rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl text-center relative overflow-hidden">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-caramel/15 text-mocha text-xs font-bold mb-3">
+        <span>✨ 10 Stamps Completed!</span>
+      </div>
+      <h3 class="font-serif text-2xl font-bold text-espresso mb-1">Coffee Fortune Unlocked</h3>
+      <p class="text-xs text-espressoLight mb-5">スタンプカード満了おめでとうございます！「今日のコーヒー占い」が解放されました</p>
+
+      <div id="fortune-modal-card" class="bg-white rounded-2xl p-5 border-2 border-dashed border-caramel/50 shadow-xs text-left mb-4">
+        <!-- Injected by JS -->
+      </div>
+
+      <div id="fortune-unlock-box" class="bg-mocha text-cream rounded-2xl p-3.5 mb-5 text-left flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-caramel/25 flex items-center justify-center text-xl shrink-0">
+          🧇
+        </div>
+        <div>
+          <span class="text-[10px] uppercase tracking-wider text-caramel font-bold block">New Customization Unlocked</span>
+          <p id="fortune-unlock-text" class="text-xs font-bold">新しい生地＆着せ替えが解放されました！</p>
+        </div>
+      </div>
+
+      <button type="button" onclick="closeFortuneModal()" class="w-full py-3 rounded-full bg-caramel hover:bg-caramelHover text-white text-sm font-bold shadow-md transition cursor-pointer">
+        カウンターで占いを楽しむ ☕
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Completed Item Detail & Reflection Modal ("Our Specials" detail view) -->
+  <div id="special-detail-modal" class="hidden fixed inset-0 z-50 bg-espresso/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-latteDark rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative">
+      <input type="hidden" id="detail-item-id" value="" />
+
+      <div class="flex items-start justify-between gap-3 pb-3.5 mb-4 border-b border-latteDark">
+        <div>
+          <span class="font-serif italic text-xs text-caramel font-semibold">Specials Recipe Card</span>
+          <div class="flex flex-wrap items-center gap-2 mt-1">
+            <span id="detail-category-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-latte text-mocha"></span>
+            <span id="detail-mood-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-caramel/15 text-espresso"></span>
+            <span id="detail-date-text" class="font-serif text-xs text-espressoLight"></span>
+          </div>
+        </div>
+        <button type="button" onclick="closeSpecialDetailModal()" class="w-8 h-8 rounded-full bg-latte hover:bg-latteDark flex items-center justify-center text-espresso transition cursor-pointer shrink-0">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <h3 id="detail-title" class="text-xl font-bold text-espresso mb-4 leading-snug"></h3>
+
+      <!-- Brewing Notes (From when it was being enjoyed with coffee) -->
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-espressoLight mb-1.5">☕ Brewing Now 時代のメモ</label>
+        <div id="detail-brewing-note" class="bg-latte/70 rounded-2xl px-4 py-3 text-xs sm:text-sm text-espresso leading-relaxed border border-latteDark/50">
+        </div>
+      </div>
+
+      <!-- Editable Reflection Notes -->
+      <div class="mb-5">
+        <label for="detail-reflection-input" class="block text-xs font-bold text-espresso mb-1.5">
+          ✨ 振り返りメモ（味わってみた感想・次に活かしたいこと）
+        </label>
+        <textarea id="detail-reflection-input" rows="4" placeholder="味わってみて感じたこと、工夫したポイント、次のアイデアへのつながりなどを自由に書き残しましょう..." class="w-full px-4 py-3 rounded-2xl bg-white border border-latteDark focus:outline-none focus:border-caramel text-sm text-espresso leading-relaxed resize-none"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-latteDark/60">
+        <button type="button" onclick="closeSpecialDetailModal()" class="px-4 py-2.5 rounded-full text-xs font-bold text-espressoLight hover:bg-latte transition cursor-pointer">
+          閉じる
+        </button>
+        <button type="button" onclick="saveSpecialReflection()" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-caramel hover:bg-caramelHover text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>振り返りを保存</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 6: Recipe Book (Archive Only; Backup/Restore is in Footer) -->
+  <div id="recipe-book-modal" class="hidden fixed inset-0 z-50 bg-espresso/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-cream border border-latteDark rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-6 bg-latte border-b border-latteDark flex items-center justify-between">
+        <div>
+          <span class="font-serif italic text-xs text-caramel font-semibold">Archive & History</span>
+          <h3 class="font-serif text-2xl font-bold text-espresso">Recipe Book <span class="font-sans text-xs font-normal text-espressoLight">これまでのひと皿一覧（クリックで振り返り）</span></h3>
+        </div>
+        <button type="button" onclick="closeRecipeBookModal()" class="w-9 h-9 rounded-full bg-cream hover:bg-latteDark flex items-center justify-center text-espresso transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="recipe-book-list" class="p-6 overflow-y-auto flex-1 flex flex-col gap-3">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // Static Cafe Definitions & Constants
+    // ==========================================
+    const DEFAULT_CATEGORIES = ['文章・メモ', 'アプリ・Web', 'デザイン・絵', '暮らし・レシピ', 'その他'];
+    const DEFAULT_MOODS = ['☕ まったり', '✨ ワクワク', '🕯️ じっくり', '🍯 甘やかし'];
+
+    const DOUGH_STYLES = [
+      {
+        id: 'plain',
+        label: 'プレーン',
+        reqCards: 0,
+        swatch: '#E5A95C',
+        top: '#EEB66C',
+        side: '#C9873B',
+        ridgeDark: '#9A5D1E',
+        ridgeLight: '#F9D69E',
+        outline: '#5C3412'
+      },
+      {
+        id: 'cocoa',
+        label: 'ココア',
+        reqCards: 1,
+        swatch: '#6F432A',
+        top: '#7B4B30',
+        side: '#56311D',
+        ridgeDark: '#3A1F11',
+        ridgeLight: '#A26D4E',
+        outline: '#2A1409'
+      },
+      {
+        id: 'matcha',
+        label: '抹茶',
+        reqCards: 2,
+        swatch: '#7B9B54',
+        top: '#89A960',
+        side: '#63803F',
+        ridgeDark: '#445B28',
+        ridgeLight: '#B4CF8E',
+        outline: '#2D3E19'
+      },
+      {
+        id: 'strawberry',
+        label: 'いちごミルク',
+        reqCards: 3,
+        swatch: '#E996A8',
+        top: '#F2A5B6',
+        side: '#D2778B',
+        ridgeDark: '#A84E63',
+        ridgeLight: '#FAD0DA',
+        outline: '#6E2B3B'
+      }
+    ];
+
+    const TABLE_STYLES = [
+      { id: 'ceramic', label: '白磁プレート', reqCards: 0, bgClass: 'stage-bg-ceramic' },
+      { id: 'wood', label: 'ぬくもり木目', reqCards: 1, bgClass: 'stage-bg-wood' },
+      { id: 'gingham', label: 'ギンガム布', reqCards: 2, bgClass: 'stage-bg-gingham' },
+      { id: 'midnight', label: 'ミッドナイト席', reqCards: 3, bgClass: 'stage-bg-midnight' }
+    ];
+
+    const WAFFLE_STAGES = [
+      {
+        level: 0,
+        reqCount: 0,
+        emoji: '🍽️',
+        name: 'お皿を用意しました',
+        desc: 'これから焼き上がるワッフルを待つ、まっさらなカフェプレートです。',
+        hint: 'コーヒーを味わって最初の1つをごちそうさますると、プレーンワッフルが焼き上がります'
+      },
+      {
+        level: 1,
+        reqCount: 1,
+        emoji: '🧇',
+        name: '焼きたてプレーンワッフル',
+        desc: '香ばしい格子模様の焼き目がついた、最初の1枚が焼き上がりました！',
+        hint: 'あと2つごちそうさますると、とろけるバターが乗ります'
+      },
+      {
+        level: 2,
+        reqCount: 3,
+        emoji: '🧈',
+        name: 'じゅわっとバターワッフル',
+        desc: '焼きたての熱で黄金色のバターがとろりと溶け出しています。',
+        hint: 'あと2つごちそうさますると、メープルシロップがかかります'
+      },
+      {
+        level: 3,
+        reqCount: 5,
+        emoji: '🍁',
+        name: 'メープル香るクラシック',
+        desc: '格子の溝に甘いメープルシロップがたっぷり染み込んだ定番の一皿。',
+        hint: 'あと5つごちそうさますると、彩りベリーが添えられます'
+      },
+      {
+        level: 4,
+        reqCount: 10,
+        emoji: '🍓',
+        name: 'ベリー＆メープルワッフル',
+        desc: '甘酸っぱいストロベリーとブルーベリーが華やかに彩ります。',
+        hint: 'あと5つごちそうさますると、ふわふわホイップが乗ります'
+      },
+      {
+        level: 5,
+        reqCount: 15,
+        emoji: '🍦',
+        name: '贅沢ホイップ・ベリーワッフル',
+        desc: '口どけなめらかなホイップクリームを添えたご褒美プレート。',
+        hint: 'あと5つごちそうさますると、ミントがきらめく特製スペシャルに！'
+      },
+      {
+        level: 6,
+        reqCount: 20,
+        emoji: '✨',
+        name: '特製ミント・スペシャルワッフル',
+        desc: '爽やかなミントと金色のきらめきをまとった、マスター自慢の最高峰プレート！',
+        hint: '素敵なアイデアがたっぷり形になりました！これからもお好きなペースでどうぞ☕'
+      }
+    ];
+
+    const COFFEE_FORTUNES_10 = [
+      { id: 1, drink: 'ブレンド・クラシック', luck: '穏やかな集中吉', note: 'ナッツとキャラメルのやさしい甘み', message: '肩の力を抜いて、まずは1行・1パーツだけ触れてみると自然とリズムが生まれます。' },
+      { id: 2, drink: 'カフェラテ・アート', luck: 'ひらめき調和吉', note: 'きめ細かなミルクと柔らかなコク', message: 'バラバラに見えた2つの思いつきが、ふとした瞬間に心地よくつながる予感です。' },
+      { id: 3, drink: 'エチオピア・モカ', luck: '軽やか冒険吉', note: 'ベリーのような華やかな香り', message: '「ちょっと面白いかも」という直感をそのまま試してみると、新しい扉が開きます。' },
+      { id: 4, drink: 'キャラメル・マキアート', luck: 'ご褒美前進吉', note: '香ばしいほろ苦さととろける甘さ', message: 'ここまで積み重ねてきた自分をしっかり甘やかしてあげると、次の一歩が軽くなります。' },
+      { id: 5, drink: 'コールドブリュー（水出し）', luck: 'じっくり熟成吉', note: '澄んだ口当たりと静かな余韻', message: '急がず一晩寝かせるように温めていたアイデアが、ちょうど飲み頃を迎えています。' },
+      { id: 6, drink: 'ウインナー・コーヒー', luck: 'まったり充実吉', note: '冷たいホイップと温かい深煎りの対比', message: '休憩時間や何気ない雑談の中に、今のあなたにぴったりのヒントが隠れています。' },
+      { id: 7, drink: 'グアテマラ・アンティグア', luck: 'コツコツ実り吉', note: 'カカオのような深いコクと心地よい酸味', message: '小さな微調整や手直しが全体の完成度をぐっと引き上げてくれる日です。' },
+      { id: 8, drink: 'ハニー・オーツラテ', luck: 'やさしさ循環吉', note: '穀物の香ばしさと自然なはちみつの余韻', message: '誰かに見せるためではなく、まず自分が「好き」と思える形を大切にしてみましょう。' },
+      { id: 9, drink: 'エスプレッソ・コンパナ', luck: '一点突破吉', note: '凝縮されたアロマとひとさじのクリーム', message: '一番気になっている核心部分だけに15分集中すると、驚くほどスッキリ進みます。' },
+      { id: 10, drink: 'デカフェ・ナイトブレンド', luck: '安心リセット吉', note: 'おだやかで角のない丸みのある味わい', message: '今日は「ここまでできた」と区切りをつけてゆっくり休むことで、明日また新鮮な気持ちで味わえます。' }
+    ];
+
+    function getWaffleStageInfo(count) {
+      let chosen = WAFFLE_STAGES[0];
+      for (const st of WAFFLE_STAGES) {
+        if (count >= st.reqCount) {
+          chosen = st;
+        }
+      }
+      return chosen;
+    }
+
+    function refreshIcons() {
+      try {
+        if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+          lucide.createIcons();
+        }
+      } catch (e) {
+        console.error('Lucide icon refresh error:', e);
+      }
+    }
+
+    // ==========================================
+    // State Management & Unified Single Key ('ideaput_cafe')
+    // ==========================================
+    const STORAGE_KEY = 'ideaput_cafe';
+
+    // Remove any legacy versioned localStorage keys so storage stays completely tidy
+    function purgeLegacyStorageKeys() {
+      try {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key !== STORAGE_KEY && key.startsWith('ideaput_cafe')) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+      } catch (e) {
+        console.error('Failed to purge legacy storage keys:', e);
+      }
+    }
+
+    purgeLegacyStorageKeys();
+
+    function createInitialSampleData() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      return {
+        ideas: [
+          {
+            id: 'sample-brewing-1',
+            title: '【使い方】「じっくり味わう」でコーヒーを飲みながら温める',
+            category: '文章・メモ',
+            mood: '☕ まったり',
+            status: 'drip',
+            note: '下のメモ欄に思いつきを書き留め、形になったら右下の「ごちそうさま」を押すとワッフルが焼き上がります🧇',
+            reflection: '',
+            createdAt: todayStr,
+            completedAt: null
+          },
+          {
+            id: 'sample-brewing-2',
+            title: '【使い方】「じっくり味わい中 / ひと休み中」のバッジを切り替え',
+            category: 'その他',
+            mood: '🕯️ じっくり',
+            status: 'resting',
+            note: '今は少し寝かせたいときも、バッジをクリックするだけで気楽に切り替えられます🫖',
+            reflection: '',
+            createdAt: todayStr,
+            completedAt: null
+          },
+          {
+            id: 'sample-beans-1',
+            title: '【使い方】右上の「オーダーする」から新しい思いつきを追加',
+            category: 'アプリ・Web',
+            mood: '✨ ワクワク',
+            status: 'beans',
+            note: '「Idea Menu に控える」か「いまの1杯として味わう」を選んで注文できます',
+            reflection: '',
+            createdAt: todayStr,
+            completedAt: null
+          },
+          {
+            id: 'sample-beans-2',
+            title: '【使い方】「じっくり味わう」を押して上の席へ運ぶ',
+            category: '暮らし・レシピ',
+            mood: '🍯 甘やかし',
+            status: 'beans',
+            note: '気になったメニューからコーヒーと一緒にゆっくり味わってみましょう',
+            reflection: '',
+            createdAt: todayStr,
+            completedAt: null
+          },
+          {
+            id: 'sample-served-1',
+            title: '【使い方】ごちそうさま済みのひと皿（タップで振り返り編集）',
+            category: '文章・メモ',
+            mood: '☕ まったり',
+            status: 'served',
+            note: 'コーヒーを飲みながらゆっくり形にした最初のひと皿です',
+            reflection: '最初の1枚が焼き上がりました！タップすると振り返りメモをいつでも書き足せます🧇',
+            createdAt: todayStr,
+            completedAt: todayStr
+          }
+        ],
+        stamps: ['11/10', '11/11', '11/12', '11/14', '11/15', '11/17', '11/18', '11/20', '11/21'],
+        completedCards: 0,
+        lastStampedDateISO: null,
+        fortuneUnlocked: false,
+        currentFortuneId: null,
+        fortuneHistory: [],
+        custom: {
+          dough: 'plain',
+          table: 'ceramic',
+          accordionOpen: false
+        },
+        customOptions: {
+          categories: [...DEFAULT_CATEGORIES],
+          moods: [...DEFAULT_MOODS],
+          settingsOpen: false
+        },
+        nightMode: false
+      };
+    }
+
+    function createCompletelyEmptyData() {
+      return {
+        ideas: [],
+        stamps: [],
+        completedCards: 0,
+        lastStampedDateISO: null,
+        fortuneUnlocked: false,
+        currentFortuneId: null,
+        fortuneHistory: [],
+        custom: {
+          dough: 'plain',
+          table: 'ceramic',
+          accordionOpen: false
+        },
+        customOptions: {
+          categories: [...DEFAULT_CATEGORIES],
+          moods: [...DEFAULT_MOODS],
+          settingsOpen: false
+        },
+        nightMode: false
+      };
+    }
+
+    // Clamp dough/table selection to what is actually unlocked by completedCards
+    function sanitizeCustomizationForCards(custom, completedCards) {
+      const cards = Math.max(0, Number(completedCards) || 0);
+      const unlockedDoughs = DOUGH_STYLES.filter(d => cards >= d.reqCards);
+      const unlockedTables = TABLE_STYLES.filter(t => cards >= t.reqCards);
+
+      const doughValid = unlockedDoughs.some(d => d.id === custom?.dough);
+      const tableValid = unlockedTables.some(t => t.id === custom?.table);
+
+      return {
+        dough: doughValid ? custom.dough : 'plain',
+        table: tableValid ? custom.table : 'ceramic',
+        accordionOpen: false
+      };
+    }
+
+    function normalizeState(rawObj) {
+      const src = rawObj && typeof rawObj === 'object' ? rawObj : {};
+      const completedCards = Math.max(
+        0,
+        Number(src.completedCards ?? src.stamps?.completedCards) || 0
+      );
+      const stamps = Array.isArray(src.stamps)
+        ? src.stamps.slice(0, 10)
+        : (Array.isArray(src.stamps?.dates) ? src.stamps.dates.slice(0, 10) : []);
+      const lastStampedDateISO = src.lastStampedDateISO ?? src.stamps?.lastStampedDateISO ?? null;
+      const fortuneUnlocked = Boolean(src.fortuneUnlocked ?? src.stamps?.fortuneUnlocked) && completedCards >= 1;
+      const currentFortuneId = fortuneUnlocked
+        ? (src.currentFortuneId ?? src.stamps?.currentFortuneId ?? 1)
+        : null;
+      const fortuneHistory = Array.isArray(src.fortuneHistory) ? src.fortuneHistory : [];
+      const rawCustom = src.custom || src.customization || {};
+
+      return {
+        ideas: Array.isArray(src.ideas) ? src.ideas : [],
+        stamps,
+        completedCards,
+        lastStampedDateISO,
+        fortuneUnlocked,
+        currentFortuneId,
+        fortuneHistory,
+        custom: sanitizeCustomizationForCards(rawCustom, completedCards),
+        customOptions: {
+          categories: Array.isArray(src.customOptions?.categories) && src.customOptions.categories.length > 0
+            ? src.customOptions.categories
+            : [...DEFAULT_CATEGORIES],
+          moods: Array.isArray(src.customOptions?.moods) && src.customOptions.moods.length > 0
+            ? src.customOptions.moods
+            : [...DEFAULT_MOODS],
+          settingsOpen: Boolean(src.customOptions?.settingsOpen)
+        },
+        nightMode: Boolean(src.nightMode)
+      };
+    }
+
+    let appState = loadState();
+    let plateMode = 'total'; // 'total' | 'monthly'
+    let pendingServeId = null;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const initialSample = createInitialSampleData();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(initialSample));
+          return initialSample;
+        }
+        return normalizeState(JSON.parse(raw));
+      } catch (e) {
+        console.error('Failed to load state:', e);
+        return createInitialSampleData();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.error('Failed to save state:', e);
+      }
+    }
+
+    function resetSampleData() {
+      appState = createInitialSampleData();
+      saveState();
+      applyNightModeUI(appState.nightMode);
+      renderAll();
+      showToast('サンプルに戻しました ☕');
+    }
+
+    function resetAllDataToZero() {
+      appState = createCompletelyEmptyData();
+      saveState();
+      applyNightModeUI(appState.nightMode);
+      renderAll();
+      showToast('まっさらな0から始めます 🍽️');
+    }
+
+    function getTodayShortDate() {
+      const now = new Date();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${m}/${d}`;
+    }
+
+    // ==========================================
+    // Custom Categories & Moods Settings Accordion
+    // ==========================================
+    function toggleFooterSettingsAccordion() {
+      appState.customOptions.settingsOpen = !appState.customOptions.settingsOpen;
+      saveState();
+      renderFooterSettingsAccordion();
+      refreshIcons();
+    }
+
+    function renderFooterSettingsAccordion() {
+      const isOpen = Boolean(appState.customOptions.settingsOpen);
+      const btn = document.getElementById('footer-settings-btn');
+      const panel = document.getElementById('footer-settings-panel');
+      const chevron = document.getElementById('footer-settings-chevron');
+
+      if (btn) btn.setAttribute('aria-expanded', String(isOpen));
+      if (panel) panel.classList.toggle('is-open', isOpen);
+      if (chevron) chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+
+      const catList = document.getElementById('settings-categories-list');
+      if (catList) {
+        catList.innerHTML = appState.customOptions.categories.map((cat, idx) => `
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-latte text-espresso text-xs font-medium border border-latteDark/60">
+            <span>${escapeHTML(cat)}</span>
+            ${appState.customOptions.categories.length > 1
+              ? `<button type="button" onclick="removeCustomCategory(${idx})" class="text-espressoLight hover:text-red-700 ml-0.5 cursor-pointer" title="削除">&times;</button>`
+              : ''}
+          </span>
+        `).join('');
+      }
+
+      const moodList = document.getElementById('settings-moods-list');
+      if (moodList) {
+        moodList.innerHTML = appState.customOptions.moods.map((mood, idx) => `
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-latte text-espresso text-xs font-medium border border-latteDark/60">
+            <span>${escapeHTML(mood)}</span>
+            ${appState.customOptions.moods.length > 1
+              ? `<button type="button" onclick="removeCustomMood(${idx})" class="text-espressoLight hover:text-red-700 ml-0.5 cursor-pointer" title="削除">&times;</button>`
+              : ''}
+          </span>
+        `).join('');
+      }
+    }
+
+    function handleAddCustomCategory(e) {
+      e.preventDefault();
+      const input = document.getElementById('new-category-input');
+      const val = input.value.trim();
+      if (!val) return;
+      if (!appState.customOptions.categories.includes(val)) {
+        appState.customOptions.categories.push(val);
+        saveState();
+        renderFooterSettingsAccordion();
+        showToast(`ジャンル「${val}」を追加しました`);
+      } else {
+        showToast('すでに登録されているジャンルです');
+      }
+      input.value = '';
+    }
+
+    function removeCustomCategory(index) {
+      if (appState.customOptions.categories.length <= 1) return;
+      const removed = appState.customOptions.categories.splice(index, 1)[0];
+      saveState();
+      renderFooterSettingsAccordion();
+      showToast(`ジャンル「${removed}」を削除しました`);
+    }
+
+    function handleAddCustomMood(e) {
+      e.preventDefault();
+      const input = document.getElementById('new-mood-input');
+      const val = input.value.trim();
+      if (!val) return;
+      if (!appState.customOptions.moods.includes(val)) {
+        appState.customOptions.moods.push(val);
+        saveState();
+        renderFooterSettingsAccordion();
+        showToast(`気分「${val}」を追加しました`);
+      } else {
+        showToast('すでに登録されている気分です');
+      }
+      input.value = '';
+    }
+
+    function removeCustomMood(index) {
+      if (appState.customOptions.moods.length <= 1) return;
+      const removed = appState.customOptions.moods.splice(index, 1)[0];
+      saveState();
+      renderFooterSettingsAccordion();
+      showToast(`気分「${removed}」を削除しました`);
+    }
+
+    function resetCustomOptionsToDefault() {
+      appState.customOptions.categories = [...DEFAULT_CATEGORIES];
+      appState.customOptions.moods = [...DEFAULT_MOODS];
+      saveState();
+      renderFooterSettingsAccordion();
+      showToast('ジャンル・気分を初期設定に戻しました ☕');
+    }
+
+    function populateOrderSelectOptions(selectedCategory = null, selectedMood = null) {
+      const catSelect = document.getElementById('idea-category');
+      const moodSelect = document.getElementById('idea-mood');
+
+      const cats = [...appState.customOptions.categories];
+      if (selectedCategory && !cats.includes(selectedCategory)) {
+        cats.push(selectedCategory);
+      }
+      catSelect.innerHTML = cats.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');
+      if (selectedCategory) catSelect.value = selectedCategory;
+
+      const moods = [...appState.customOptions.moods];
+      if (selectedMood && !moods.includes(selectedMood)) {
+        moods.push(selectedMood);
+      }
+      moodSelect.innerHTML = moods.map(m => `<option value="${escapeHTML(m)}">${escapeHTML(m)}</option>`).join('');
+      if (selectedMood) moodSelect.value = selectedMood;
+    }
+
+    function getDoughStyle(doughId) {
+      const cardsDone = appState.completedCards || 0;
+      const candidate = DOUGH_STYLES.find(d => d.id === doughId);
+      if (candidate && cardsDone >= candidate.reqCards) {
+        return candidate;
+      }
+      return DOUGH_STYLES[0];
+    }
+
+    function getTableStyle(tableId) {
+      const cardsDone = appState.completedCards || 0;
+      const candidate = TABLE_STYLES.find(t => t.id === tableId);
+      if (candidate && cardsDone >= candidate.reqCards) {
+        return candidate;
+      }
+      return TABLE_STYLES[0];
+    }
+
+    // ==========================================
+    // Square Cafe Waffle SVG Generator
+    // Crisp waffle grid ridges (格子状の焼き目・リブ) with NO polka-dot holes
+    // ==========================================
+    function generateWaffleSVG(level, doughId = 'plain') {
+      const isSpecial = level >= 20;
+      const plateRimColor = isSpecial ? '#D4AF37' : '#D8C7B4';
+      const plateInnerColor = isSpecial ? '#FFFDF7' : '#FFFFFF';
+      const pal = getDoughStyle(doughId);
+
+      let svg = `<svg viewBox="0 0 260 200" class="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">`;
+
+      // Soft table shadow under plate
+      svg += `<ellipse cx="130" cy="164" rx="98" ry="20" fill="#180E0A" opacity="0.14"/>`;
+
+      // Cute Cutlery (Fork on left, Knife on right)
+      svg += `
+        <g stroke="#8C6D53" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.85">
+          <path d="M24 72 L24 148" />
+          <path d="M19 72 L19 88 Q19 94 24 94 Q29 94 29 88 L29 72" />
+          <path d="M24 72 L24 94" />
+          <path d="M236 72 L236 148" />
+          <path d="M236 72 Q243 85 236 105" fill="#E8DDD0" />
+        </g>
+      `;
+
+      // Plate Base
+      svg += `<ellipse cx="130" cy="144" rx="92" ry="32" fill="${plateInnerColor}" stroke="${plateRimColor}" stroke-width="3.5"/>`;
+      svg += `<ellipse cx="130" cy="144" rx="74" ry="23" fill="none" stroke="${plateRimColor}" stroke-width="1.2" stroke-dasharray="${isSpecial ? 'none' : '4 3'}"/>`;
+
+      if (level === 0) {
+        svg += `<text x="130" y="141" text-anchor="middle" font-family="Lora, serif" font-style="italic" font-size="13" fill="#B39B84">Waiting to bake...</text>`;
+      }
+
+      // Level 1+: Square / Rounded-Square Cafe Waffle with Crisp Grid Ridges
+      if (level >= 1) {
+        svg += `
+          <g transform="translate(0, -4)">
+            <!-- Front-left & front-right baked thickness walls -->
+            <path d="M76 114 L130 140 L130 151 L76 125 Z" fill="${pal.side}" stroke="${pal.outline}" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M130 140 L184 114 L184 125 L130 151 Z" fill="${pal.ridgeDark}" stroke="${pal.outline}" stroke-width="2.2" stroke-linejoin="round"/>
+
+            <!-- Square Waffle Top Surface -->
+            <polygon points="130,88 184,114 130,140 76,114" fill="${pal.top}" stroke="${pal.outline}" stroke-width="2.4" stroke-linejoin="round"/>
+
+            <!-- Crisp Raised Grid Ridges (3x3 square waffle cells / raised ribs) -->
+            <g stroke="${pal.ridgeDark}" stroke-width="2.2" stroke-linecap="round" opacity="0.72" fill="none">
+              <line x1="112" y1="97" x2="166" y2="123" />
+              <line x1="94" y1="105.5" x2="148" y2="131.5" />
+              <line x1="148" y1="97" x2="94" y2="123" />
+              <line x1="166" y1="105.5" x2="112" y2="131.5" />
+            </g>
+
+            <!-- Subtle warm highlight along raised ridge crests -->
+            <g stroke="${pal.ridgeLight}" stroke-width="1.2" stroke-linecap="round" opacity="0.75" fill="none">
+              <line x1="112" y1="96" x2="166" y2="122" />
+              <line x1="94" y1="104.5" x2="148" y2="130.5" />
+              <line x1="148" y1="96" x2="94" y2="122" />
+              <line x1="166" y1="104.5" x2="112" y2="130.5" />
+            </g>
+
+            <!-- Crisp outer border around the square waffle -->
+            <polygon points="130,88 184,114 130,140 76,114" fill="none" stroke="${pal.outline}" stroke-width="2.4" stroke-linejoin="round"/>
+          </g>
+        `;
+      }
+
+      // Level 3+: Rich Maple Syrup Drizzle over the square grid
+      if (level >= 3) {
+        svg += `
+          <g transform="translate(0, -4)">
+            <path d="M106 104 Q122 96 138 102 Q154 108 156 116 Q150 121 145 129 Q141 135 137 127 Q132 120 124 123 Q117 126 113 133 Q108 136 106 126 Q104 117 97 115 Q95 110 106 104 Z"
+                  fill="#9E4716" opacity="0.88" stroke="#5C280A" stroke-width="1.5"/>
+            <path d="M114 104 Q128 100 142 106" stroke="#F4B97B" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.72"/>
+          </g>
+        `;
+      }
+
+      // Level 2+: Melting Butter Pat in the center of the square waffle
+      if (level >= 2) {
+        svg += `
+          <g transform="translate(0, -6)">
+            <ellipse cx="130" cy="112" rx="18" ry="8" fill="#FDE047" opacity="0.65"/>
+            <polygon points="120,103 132,98 142,104 130,109" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8" stroke-linejoin="round"/>
+            <polygon points="120,103 130,109 130,114 120,108" fill="#FACC15" stroke="#CA8A04" stroke-width="1.8" stroke-linejoin="round"/>
+            <polygon points="142,104 130,109 130,114 142,109" fill="#EAB308" stroke="#CA8A04" stroke-width="1.8" stroke-linejoin="round"/>
+          </g>
+        `;
+      }
+
+      // Level 4+: Strawberries & Blueberries
+      if (level >= 4) {
+        svg += `
+          <g transform="translate(0, -4)">
+            <path d="M96 114 C91 105, 105 100, 108 110 C110 117, 101 122, 96 114 Z" fill="#E11D48" stroke="#881337" stroke-width="1.6"/>
+            <path d="M97 105 L102 108 L106 104" stroke="#15803D" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+            <path d="M162 114 C167 105, 153 100, 150 110 C148 117, 157 122, 162 114 Z" fill="#E11D48" stroke="#881337" stroke-width="1.6"/>
+            <path d="M153 105 L157 108 L161 104" stroke="#15803D" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+            <circle cx="112" cy="123" r="4.5" fill="#3730A3" stroke="#1E1B4B" stroke-width="1.5"/>
+            <circle cx="111" cy="121.5" r="1.1" fill="#A5B4FC"/>
+            <circle cx="148" cy="123" r="4.5" fill="#3730A3" stroke="#1E1B4B" stroke-width="1.5"/>
+            <circle cx="147" cy="121.5" r="1.1" fill="#A5B4FC"/>
+          </g>
+        `;
+      }
+
+      // Level 5+: Fluffy Whipped Cream Swirl
+      if (level >= 5) {
+        svg += `
+          <g transform="translate(0, -10)">
+            <path d="M113 98 C108 98, 108 90, 117 89 C114 83, 121 78, 128 79 C129 72, 134 69, 136 75 C142 77, 145 83, 142 89 C150 90, 150 98, 145 98 Z"
+                  fill="#FFFDF9" stroke="#D6C7B8" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M118 92 Q130 94 140 91" stroke="#E8DDD0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </g>
+        `;
+      }
+
+      // Level 6+: Special Waffle (Fresh Mint Leaf + Golden Sparkles)
+      if (level >= 6) {
+        svg += `
+          <g transform="translate(0, -10)">
+            <path d="M134 73 Q143 64 149 71 Q142 77 134 73 Z" fill="#22C55E" stroke="#15803D" stroke-width="1.4"/>
+            <path d="M133 73 Q126 65 121 71 Q127 77 133 73 Z" fill="#4ADE80" stroke="#15803D" stroke-width="1.4"/>
+          </g>
+          <g fill="#F59E0B">
+            <path d="M72 78 L74 83 L79 85 L74 87 L72 92 L70 87 L65 85 L70 83 Z"/>
+            <path d="M188 74 L189.5 78 L193.5 79.5 L189.5 81 L188 85 L186.5 81 L182.5 79.5 L186.5 78 Z"/>
+            <circle cx="95" cy="70" r="2"/>
+            <circle cx="166" cy="68" r="2"/>
+          </g>
+        `;
+      }
+
+      svg += `</svg>`;
+      return svg;
+    }
+
+    // ==========================================
+    // Rendering Functions
+    // ==========================================
+    function renderAll() {
+      renderWafflePlate();
+      renderCustomizerAccordion();
+      renderStampCard();
+      renderCoffeeFortuneCorner();
+      renderFooterSettingsAccordion();
+      renderBrewingList();
+      renderBeansList();
+      renderSpecialsList();
+      refreshIcons();
+    }
+
+    function switchPlateMode(mode) {
+      plateMode = mode;
+      const tabTotal = document.getElementById('tab-total');
+      const tabMonthly = document.getElementById('tab-monthly');
+
+      if (mode === 'total') {
+        tabTotal.className = 'px-3 py-1 rounded-full bg-mocha text-cream transition cursor-pointer';
+        tabMonthly.className = 'px-3 py-1 rounded-full text-espressoLight hover:text-espresso transition cursor-pointer';
+      } else {
+        tabMonthly.className = 'px-3 py-1 rounded-full bg-mocha text-cream transition cursor-pointer';
+        tabTotal.className = 'px-3 py-1 rounded-full text-espressoLight hover:text-espresso transition cursor-pointer';
+      }
+      renderWafflePlate();
+    }
+
+    function renderWafflePlate() {
+      const servedItems = appState.ideas.filter(i => i.status === 'served');
+      let count = servedItems.length;
+
+      if (plateMode === 'monthly') {
+        const now = new Date();
+        const currentYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        count = servedItems.filter(i => i.completedAt && i.completedAt.startsWith(currentYM)).length;
+        document.getElementById('plate-mode-label').textContent = '今月のプレート (Monthly)';
+      } else {
+        document.getElementById('plate-mode-label').textContent = 'これまでの歴史 (Total)';
+      }
+
+      document.getElementById('waffle-count-display').textContent = count;
+
+      const stageBox = document.getElementById('waffle-stage-box');
+      const tableStyle = getTableStyle(appState.custom.table);
+      stageBox.classList.remove(...TABLE_STYLES.map(t => t.bgClass));
+      stageBox.classList.add(tableStyle.bgClass);
+
+      const stage = getWaffleStageInfo(count);
+      document.getElementById('waffle-svg-container').innerHTML = generateWaffleSVG(stage.level, appState.custom.dough);
+      document.getElementById('waffle-stage-emoji').textContent = stage.emoji;
+      document.getElementById('waffle-stage-name').textContent = stage.name;
+      document.getElementById('waffle-next-hint').textContent = stage.hint;
+    }
+
+    function toggleCustomizerAccordion() {
+      appState.custom.accordionOpen = !appState.custom.accordionOpen;
+      saveState();
+      renderCustomizerAccordion();
+      refreshIcons();
+    }
+
+    function renderCustomizerAccordion() {
+      const isOpen = Boolean(appState.custom.accordionOpen);
+      const btn = document.getElementById('customizer-accordion-btn');
+      const panel = document.getElementById('customizer-accordion-panel');
+      const chevron = document.getElementById('customizer-chevron');
+      const pill = document.getElementById('customizer-unlocked-pill');
+      const container = document.getElementById('customizer-controls');
+
+      if (btn) btn.setAttribute('aria-expanded', String(isOpen));
+      if (panel) {
+        panel.classList.toggle('is-open', isOpen);
+      }
+      if (chevron) {
+        chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+      }
+
+      const cardsDone = appState.completedCards || 0;
+      const unlockedDoughCount = DOUGH_STYLES.filter(d => cardsDone >= d.reqCards).length;
+      const unlockedTableCount = TABLE_STYLES.filter(t => cardsDone >= t.reqCards).length;
+      if (pill) {
+        pill.textContent = `生地 ${unlockedDoughCount}/${DOUGH_STYLES.length} ・ 席 ${unlockedTableCount}/${TABLE_STYLES.length}`;
+      }
+
+      const doughHTML = `
+        <div class="bg-cream/85 p-2.5 rounded-xl border border-latteDark/50">
+          <span class="text-[10px] font-bold text-espressoLight block mb-1.5">ワッフル生地</span>
+          <div class="flex flex-wrap gap-1.5">
+            ${DOUGH_STYLES.map(d => {
+              const unlocked = cardsDone >= d.reqCards;
+              const active = appState.custom.dough === d.id && unlocked;
+              if (!unlocked) {
+                return `<span class="text-[10px] px-2 py-1 rounded-full bg-latteDark/40 text-espressoLight/70 inline-flex items-center gap-1" title="スタンプカード${d.reqCards}枚満了で解放">🔒 ${escapeHTML(d.label)}</span>`;
+              }
+              return `
+                <button type="button" onclick="setDoughStyle('${d.id}')" class="text-[10px] px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1.5 transition cursor-pointer ${
+                  active ? 'bg-mocha text-cream shadow-2xs' : 'bg-white text-espresso hover:bg-latte border border-latteDark/40'
+                }">
+                  <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/15" style="background:${d.swatch}"></span>
+                  <span>${escapeHTML(d.label)}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+
+      const tableHTML = `
+        <div class="bg-cream/85 p-2.5 rounded-xl border border-latteDark/50">
+          <span class="text-[10px] font-bold text-espressoLight block mb-1.5">テーブル＆お皿</span>
+          <div class="flex flex-wrap gap-1.5">
+            ${TABLE_STYLES.map(t => {
+              const unlocked = cardsDone >= t.reqCards;
+              const active = appState.custom.table === t.id && unlocked;
+              if (!unlocked) {
+                return `<span class="text-[10px] px-2 py-1 rounded-full bg-latteDark/40 text-espressoLight/70 inline-flex items-center gap-1" title="スタンプカード${t.reqCards}枚満了で解放">🔒 ${escapeHTML(t.label)}</span>`;
+              }
+              return `
+                <button type="button" onclick="setTableStyle('${t.id}')" class="text-[10px] px-2.5 py-1 rounded-full font-bold transition cursor-pointer ${
+                  active ? 'bg-mocha text-cream shadow-2xs' : 'bg-white text-espresso hover:bg-latte border border-latteDark/40'
+                }">
+                  ${escapeHTML(t.label)}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+
+      if (container) {
+        container.innerHTML = doughHTML + tableHTML;
+      }
+    }
+
+    function setDoughStyle(doughId) {
+      const cardsDone = appState.completedCards || 0;
+      const target = DOUGH_STYLES.find(d => d.id === doughId);
+      if (!target || cardsDone < target.reqCards) return;
+
+      appState.custom.dough = doughId;
+      saveState();
+      renderWafflePlate();
+      renderCustomizerAccordion();
+      refreshIcons();
+    }
+
+    function setTableStyle(tableId) {
+      const cardsDone = appState.completedCards || 0;
+      const target = TABLE_STYLES.find(t => t.id === tableId);
+      if (!target || cardsDone < target.reqCards) return;
+
+      appState.custom.table = tableId;
+      saveState();
+      renderWafflePlate();
+      renderCustomizerAccordion();
+      refreshIcons();
+    }
+
+    // ==========================================
+    // Waffle Growth Guide Modal (成長図鑑)
+    // ==========================================
+    function openWaffleGuideModal() {
+      const grid = document.getElementById('waffle-guide-grid');
+      const totalServed = appState.ideas.filter(i => i.status === 'served').length;
+      const doughId = appState.custom.dough || 'plain';
+
+      grid.innerHTML = WAFFLE_STAGES.map(st => {
+        const isUnlocked = totalServed >= st.reqCount;
+        return `
+          <div class="rounded-2xl p-4 border flex flex-col items-center text-center transition ${
+            isUnlocked
+              ? 'bg-white border-caramel/50 shadow-xs'
+              : 'bg-latte/40 border-latteDark/60 opacity-80'
+          }">
+            <div class="w-full flex items-center justify-between text-[11px] mb-1">
+              <span class="font-serif font-bold text-mocha">Stage ${st.level}</span>
+              <span class="px-2 py-0.5 rounded-full font-bold ${
+                isUnlocked ? 'bg-caramel/15 text-mocha' : 'bg-latteDark/50 text-espressoLight'
+              }">
+                ${isUnlocked ? `✨ 解放済 (${st.reqCount}件〜)` : `🔒 完成 ${st.reqCount}件で解放`}
+              </span>
+            </div>
+
+            <div class="w-36 h-28 my-1 ${isUnlocked ? '' : 'grayscale opacity-65'}">
+              ${generateWaffleSVG(st.level, doughId)}
+            </div>
+
+            <h4 class="font-bold text-sm text-espresso mt-1">${st.emoji} ${st.name}</h4>
+            <p class="text-[11px] text-espressoLight mt-1 leading-relaxed">${st.desc}</p>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('waffle-guide-modal').classList.remove('hidden');
+      refreshIcons();
+    }
+
+    function closeWaffleGuideModal() {
+      document.getElementById('waffle-guide-modal').classList.add('hidden');
+    }
+
+    // ==========================================
+    // Date-Stamped Loyalty Card & 10-Kind Coffee Fortune
+    // ==========================================
+    function renderStampCard() {
+      const grid = document.getElementById('stamp-grid');
+      grid.innerHTML = '';
+
+      const dates = appState.stamps || [];
+      const cardsDone = appState.completedCards || 0;
+
+      document.getElementById('current-card-badge').textContent = `Card #${cardsDone + 1}`;
+      document.getElementById('completed-cards-count').textContent = `${cardsDone} 枚達成`;
+
+      for (let i = 0; i < 10; i++) {
+        const stampedDate = dates[i];
+        const isStamped = Boolean(stampedDate);
+        const slot = document.createElement('div');
+        slot.className = `aspect-square rounded-2xl flex flex-col items-center justify-center border-2 transition select-none ${
+          isStamped
+            ? 'bg-caramel/15 border-caramel text-mocha shadow-2xs'
+            : 'bg-latte/40 border-dashed border-latteDark text-latteDark shadow-stamp'
+        }`;
+
+        if (isStamped) {
+          slot.innerHTML = `
+            <div class="flex flex-col items-center justify-center transform -rotate-6">
+              <i data-lucide="coffee" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-caramel"></i>
+              <span class="font-serif text-[10px] font-bold leading-tight mt-0.5 text-espresso">${escapeHTML(stampedDate)}</span>
+            </div>
+          `;
+        } else {
+          slot.innerHTML = `<span class="font-serif text-xs font-semibold">${i + 1}</span>`;
+        }
+        grid.appendChild(slot);
+      }
+
+      const todayISO = new Date().toISOString().split('T')[0];
+      const todayShort = getTodayShortDate();
+      const btnText = document.getElementById('stamp-btn-text');
+
+      if (appState.lastStampedDateISO === todayISO) {
+        btnText.textContent = `本日の来店スタンプ済み (${todayShort}) ☕`;
+      } else {
+        btnText.textContent = `今日の来店スタンプを押す (${todayShort})`;
+      }
+
+      const statusHint = document.getElementById('fortune-status-hint');
+      if (appState.fortuneUnlocked) {
+        statusHint.innerHTML = `<span class="text-mocha font-bold">✨ 「今日のコーヒー占い」解放済み（全10種）</span>`;
+      } else {
+        const remain = Math.max(0, 10 - dates.length);
+        statusHint.textContent = `🔒 あと ${remain} スタンプで「今日のコーヒー占い」解放`;
+      }
+    }
+
+    function pickRandomFortuneId(excludeId = null) {
+      const pool = COFFEE_FORTUNES_10.filter(f => f.id !== excludeId);
+      const chosen = pool[Math.floor(Math.random() * pool.length)] || COFFEE_FORTUNES_10[0];
+      return chosen.id;
+    }
+
+    function getCurrentFortune() {
+      const found = COFFEE_FORTUNES_10.find(f => f.id === appState.currentFortuneId);
+      return found || COFFEE_FORTUNES_10[0];
+    }
+
+    function recordFortuneHistory(fortuneId) {
+      const fortune = COFFEE_FORTUNES_10.find(f => f.id === fortuneId);
+      if (!fortune) return;
+      appState.fortuneHistory.unshift({
+        id: fortune.id,
+        drink: fortune.drink,
+        luck: fortune.luck,
+        date: new Date().toISOString().split('T')[0]
+      });
+      if (appState.fortuneHistory.length > 30) {
+        appState.fortuneHistory = appState.fortuneHistory.slice(0, 30);
+      }
+    }
+
+    function renderCoffeeFortuneCorner() {
+      const corner = document.getElementById('coffee-fortune-corner');
+      const bodyEl = document.getElementById('fortune-card-body');
+      if (!corner || !bodyEl) return;
+
+      if (!appState.fortuneUnlocked) {
+        corner.classList.add('hidden');
+        return;
+      }
+
+      corner.classList.remove('hidden');
+      const f = getCurrentFortune();
+      bodyEl.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
+          <span class="font-bold text-xs sm:text-sm text-mocha">${escapeHTML(f.drink)}</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-caramel text-white">${escapeHTML(f.luck)}</span>
+        </div>
+        <p class="text-[11px] text-espressoLight italic mb-2">Tasting Note: ${escapeHTML(f.note)}</p>
+        <p class="text-xs text-espresso leading-relaxed bg-latte/65 p-2.5 rounded-xl">${escapeHTML(f.message)}</p>
+      `;
+    }
+
+    function redrawCoffeeFortune() {
+      const nextId = pickRandomFortuneId(appState.currentFortuneId);
+      appState.currentFortuneId = nextId;
+      recordFortuneHistory(nextId);
+      saveState();
+      renderCoffeeFortuneCorner();
+      refreshIcons();
+      showToast('別の1杯を引き直しました ☕');
+    }
+
+    function stampToday() {
+      const todayISO = new Date().toISOString().split('T')[0];
+      const shortDateStr = getTodayShortDate();
+      const msgEl = document.getElementById('stamp-message');
+
+      if (appState.lastStampedDateISO === todayISO) {
+        msgEl.textContent = '今日はすでにスタンプを押しています。ゆっくり過ごしてくださいね☕';
+        return;
+      }
+
+      appState.stamps.push(shortDateStr);
+      appState.lastStampedDateISO = todayISO;
+
+      const currentLen = appState.stamps.length;
+
+      // 10th stamp completed!
+      if (currentLen >= 10) {
+        appState.completedCards = (appState.completedCards || 0) + 1;
+        const newTotalCards = appState.completedCards;
+        appState.fortuneUnlocked = true;
+        const nextId = pickRandomFortuneId(appState.currentFortuneId);
+        appState.currentFortuneId = nextId;
+        recordFortuneHistory(nextId);
+        appState.stamps = [];
+
+        saveState();
+        renderAll();
+
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 70,
+            spread: 75,
+            origin: { y: 0.6 },
+            colors: ['#C88A4B', '#6B4423', '#FACC15', '#FAF6F0']
+          });
+        }
+
+        msgEl.textContent = `祝・${newTotalCards}枚目満了！「今日のコーヒー占い」が解放されました✨`;
+        openFortuneUnlockModal(newTotalCards);
+        return;
+      }
+
+      saveState();
+      renderStampCard();
+      refreshIcons();
+
+      const slots = document.getElementById('stamp-grid').children;
+      const targetSlot = slots[currentLen - 1];
+      if (targetSlot && targetSlot.firstElementChild) {
+        targetSlot.firstElementChild.classList.add('animate-stamp');
+      }
+
+      const encouragements = [
+        'コーヒーを片手に立ち寄れただけで素敵な前進です☕',
+        '今日もカフェに立ち寄ってくれてありがとうございます✨',
+        '焦らず、焼き上がりを待つようにゆっくり味わいましょう',
+        'あと少しで10スタンプ！コーヒー占いをお楽しみに🌿'
+      ];
+      msgEl.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
+      showToast(`来店スタンプ (${shortDateStr}) を押しました！☕`);
+    }
+
+    function openFortuneUnlockModal(cardNumber = 1) {
+      const f = getCurrentFortune();
+      document.getElementById('fortune-modal-card').innerHTML = `
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <span class="font-bold text-sm text-mocha">${escapeHTML(f.drink)}</span>
+          <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-caramel text-white">${escapeHTML(f.luck)}</span>
+        </div>
+        <p class="text-[11px] text-espressoLight italic mb-2.5">${escapeHTML(f.note)}</p>
+        <p class="text-xs sm:text-sm text-espresso leading-relaxed">${escapeHTML(f.message)}</p>
+      `;
+
+      const unlockedDough = DOUGH_STYLES.find(d => d.reqCards === cardNumber);
+      const unlockedTable = TABLE_STYLES.find(t => t.reqCards === cardNumber);
+      const parts = [];
+      if (unlockedDough) parts.push(`生地「${unlockedDough.label}」`);
+      if (unlockedTable) parts.push(`席「${unlockedTable.label}」`);
+
+      document.getElementById('fortune-unlock-text').textContent = parts.length > 0
+        ? `${parts.join('」と「')}が解放されました！`
+        : `スタンプカード ${cardNumber}枚目満了！いつもありがとうございます☕`;
+
+      document.getElementById('fortune-modal').classList.remove('hidden');
+      refreshIcons();
+    }
+
+    function closeFortuneModal() {
+      document.getElementById('fortune-modal').classList.add('hidden');
+    }
+
+    // ==========================================
+    // Menu Board Lists (Brewing, Beans, Specials)
+    // ==========================================
+    function renderBrewingList() {
+      const container = document.getElementById('brewing-list');
+      const items = appState.ideas.filter(i => i.status === 'drip' || i.status === 'resting');
+
+      document.getElementById('brewing-counter-badge').textContent = `${items.length} / 3 cups recommended`;
+      const notice = document.getElementById('brewing-limit-notice');
+      if (items.length > 3) {
+        notice.classList.remove('hidden');
+      } else {
+        notice.classList.add('hidden');
+      }
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="bg-cream/80 rounded-2xl p-6 text-center border border-dashed border-latteDark">
+            <p class="text-sm text-espressoLight mb-1">いまじっくり味わっているメニューはありません</p>
+            <p class="text-xs text-espressoLight/80">下の「Idea Menu」から気になるメニューを選んで「じっくり味わう」を押してみましょう☕</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        const isDrip = item.status === 'drip';
+        return `
+          <div class="bg-cream rounded-2xl p-4 sm:p-5 border border-latteDark/70 shadow-2xs hover:shadow-cafe transition flex flex-col gap-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                  <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-latte text-mocha">
+                    ${escapeHTML(item.category)}
+                  </span>
+                  <span class="text-[11px] px-2 py-0.5 rounded-full bg-white/80 text-espressoLight border border-latteDark/50">
+                    ${escapeHTML(item.mood || '☕ まったり')}
+                  </span>
+                  <button type="button" onclick="toggleBrewState('${item.id}')" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full transition cursor-pointer ${
+                    isDrip
+                      ? 'bg-caramel/20 text-espresso border border-caramel/40'
+                      : 'bg-latteDark/60 text-espressoLight border border-latteDark'
+                  }" title="クリックで状態を切り替え">
+                    <span>${isDrip ? '☕ じっくり味わい中' : '🫖 ひと休み中'}</span>
+                  </button>
+                </div>
+                <h3 class="font-bold text-base text-espresso leading-snug">${escapeHTML(item.title)}</h3>
+              </div>
+
+              <div class="flex items-center gap-1 shrink-0">
+                <button type="button" onclick="openEditModal('${item.id}')" class="p-1.5 rounded-lg text-espressoLight hover:text-espresso hover:bg-latte transition cursor-pointer" title="メモを編集">
+                  <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                </button>
+                <button type="button" onclick="moveToBeans('${item.id}')" class="p-1.5 rounded-lg text-espressoLight hover:text-espresso hover:bg-latte transition cursor-pointer" title="Idea Menuに戻す">
+                  <i data-lucide="arrow-down-circle" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 bg-white/75 rounded-xl px-3 py-2 border border-latteDark/40">
+              <i data-lucide="message-square" class="w-3.5 h-3.5 text-caramel shrink-0"></i>
+              <input type="text" value="${escapeHTML(item.note || '')}"
+                onchange="updateInlineNote('${item.id}', this.value)"
+                placeholder="コーヒーを飲みながら気づいたメモや今の気分をひとこと..."
+                class="w-full bg-transparent text-xs text-espresso focus:outline-none placeholder:text-espressoLight/50" />
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[11px] text-espressoLight">ワッフルの焼き上がりを待ちながら進行中</span>
+              <button type="button" onclick="openServeModal('${item.id}')" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-caramel hover:bg-caramelHover text-white text-[11px] font-bold shadow-2xs transition transform active:scale-95 cursor-pointer">
+                <i data-lucide="utensils" class="w-3 h-3"></i>
+                <span>ごちそうさま</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderBeansList() {
+      const container = document.getElementById('beans-list');
+      const items = appState.ideas.filter(i => i.status === 'beans');
+
+      document.getElementById('beans-count-badge').textContent = `${items.length} ${items.length === 1 ? 'item' : 'items'}`;
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="py-6 text-center">
+            <p class="text-xs text-espressoLight">メニューに並んでいるアイデアはありません。右上の「オーダーする」からいつでも追加できます。</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map((item, idx) => `
+        <div class="py-3 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 group">
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center justify-center text-sm leading-none shrink-0" aria-hidden="true">🫘</span>
+              <span class="font-bold text-sm text-espresso leading-snug">${escapeHTML(item.title)}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-latte text-espressoLight shrink-0">${escapeHTML(item.category)}</span>
+              <span class="text-[10px] text-espressoLight/80 leading-none">${escapeHTML(item.mood || '')}</span>
+            </div>
+            ${item.note ? `<p class="text-xs text-espressoLight mt-1 pl-6 leading-relaxed">${escapeHTML(item.note)}</p>` : ''}
+          </div>
+
+          <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+            <button type="button" onclick="reorderBean('${item.id}', -1)" ${idx === 0 ? 'disabled' : ''} class="p-1.5 rounded-lg text-espressoLight hover:text-espresso hover:bg-latte disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer" title="上へ移動">
+              <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+            </button>
+            <button type="button" onclick="reorderBean('${item.id}', 1)" ${idx === items.length - 1 ? 'disabled' : ''} class="p-1.5 rounded-lg text-espressoLight hover:text-espresso hover:bg-latte disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer" title="下へ移動">
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+            </button>
+            <button type="button" onclick="startBrewing('${item.id}')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-latte hover:bg-mocha text-espresso hover:text-cream text-xs font-bold transition cursor-pointer">
+              <i data-lucide="coffee" class="w-3 h-3"></i>
+              <span>じっくり味わう</span>
+            </button>
+            <button type="button" onclick="openEditModal('${item.id}')" class="p-1.5 rounded-lg text-espressoLight hover:text-espresso hover:bg-latte transition cursor-pointer" title="編集">
+              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+            </button>
+            <button type="button" onclick="deleteIdea('${item.id}')" class="p-1.5 rounded-lg text-espressoLight hover:text-red-700 hover:bg-red-50 transition cursor-pointer" title="削除">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function reorderBean(id, delta) {
+      const beanIndices = [];
+      appState.ideas.forEach((item, idx) => {
+        if (item.status === 'beans') beanIndices.push(idx);
+      });
+      const pos = beanIndices.findIndex(idx => appState.ideas[idx].id === id);
+      const targetPos = pos + delta;
+      if (pos < 0 || targetPos < 0 || targetPos >= beanIndices.length) return;
+
+      const idxA = beanIndices[pos];
+      const idxB = beanIndices[targetPos];
+      const temp = appState.ideas[idxA];
+      appState.ideas[idxA] = appState.ideas[idxB];
+      appState.ideas[idxB] = temp;
+
+      saveState();
+      renderBeansList();
+      refreshIcons();
+    }
+
+    function renderSpecialsList() {
+      const container = document.getElementById('specials-list');
+      const items = appState.ideas
+        .filter(i => i.status === 'served')
+        .sort((a, b) => (b.completedAt || '').localeCompare(a.completedAt || ''))
+        .slice(0, 4);
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-cream/80 rounded-2xl p-6 text-center border border-dashed border-latteDark">
+            <p class="text-xs text-espressoLight">まだ「ごちそうさま」したひと皿はありません。最初のひと皿がここに並びます✨</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div onclick="openSpecialDetailModal('${item.id}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openSpecialDetailModal('${item.id}')"
+          class="bg-cream hover:bg-white rounded-2xl p-4 border border-latteDark/60 hover:border-caramel/60 shadow-2xs hover:shadow-cafe transition flex flex-col justify-between gap-2 cursor-pointer group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-caramel/15 text-mocha">${escapeHTML(item.category)}</span>
+              <span class="font-serif text-[11px] text-espressoLight">${item.completedAt || ''}</span>
+            </div>
+            <h4 class="font-bold text-sm text-espresso leading-snug group-hover:text-mocha transition">${escapeHTML(item.title)}</h4>
+            ${item.reflection
+              ? `<p class="text-xs text-espressoLight mt-1.5 bg-latte/65 p-2 rounded-xl line-clamp-2">“${escapeHTML(item.reflection)}”</p>`
+              : `<p class="text-[11px] text-espressoLight/70 mt-1.5 italic">タップして振り返りメモを書く →</p>`
+            }
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==========================================
+    // Completed Item Detail & Reflection Modal
+    // ==========================================
+    function openSpecialDetailModal(id) {
+      const item = appState.ideas.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('detail-item-id').value = item.id;
+      document.getElementById('detail-category-badge').textContent = item.category || 'その他';
+      document.getElementById('detail-mood-badge').textContent = item.mood ? `気分: ${item.mood}` : '気分: ☕ まったり';
+      document.getElementById('detail-date-text').textContent = item.completedAt ? `Served ${item.completedAt}` : '';
+      document.getElementById('detail-title').textContent = item.title;
+
+      const brewingNoteEl = document.getElementById('detail-brewing-note');
+      brewingNoteEl.textContent = item.note && item.note.trim()
+        ? item.note
+        : '（味わっている途中のメモはありませんでした）';
+
+      document.getElementById('detail-reflection-input').value = item.reflection || '';
+      document.getElementById('special-detail-modal').classList.remove('hidden');
+      refreshIcons();
+    }
+
+    function closeSpecialDetailModal() {
+      document.getElementById('special-detail-modal').classList.add('hidden');
+    }
+
+    function saveSpecialReflection() {
+      const id = document.getElementById('detail-item-id').value;
+      const item = appState.ideas.find(i => i.id === id);
+      if (!item) return;
+
+      item.reflection = document.getElementById('detail-reflection-input').value.trim();
+      saveState();
+      closeSpecialDetailModal();
+      renderSpecialsList();
+      if (!document.getElementById('recipe-book-modal').classList.contains('hidden')) {
+        openRecipeBookModal();
+      }
+      showToast('振り返りメモを保存しました ✨');
+    }
+
+    // ==========================================
+    // Interactive Actions
+    // ==========================================
+    function toggleBrewState(id) {
+      const idea = appState.ideas.find(i => i.id === id);
+      if (!idea) return;
+      idea.status = idea.status === 'drip' ? 'resting' : 'drip';
+      saveState();
+      renderBrewingList();
+      refreshIcons();
+      showToast(idea.status === 'drip' ? 'じっくり味わい始めました ☕' : 'いったんひと休み中にしました 🫖');
+    }
+
+    function startBrewing(id) {
+      const idea = appState.ideas.find(i => i.id === id);
+      if (!idea) return;
+      idea.status = 'drip';
+      saveState();
+      renderAll();
+      showToast(`「${idea.title}」をじっくり味わい始めました ☕`);
+    }
+
+    function moveToBeans(id) {
+      const idea = appState.ideas.find(i => i.id === id);
+      if (!idea) return;
+      idea.status = 'beans';
+      saveState();
+      renderAll();
+      showToast('Idea Menu に戻しました 📋');
+    }
+
+    function updateInlineNote(id, newNote) {
+      const idea = appState.ideas.find(i => i.id === id);
+      if (!idea) return;
+      idea.note = newNote.trim();
+      saveState();
+      showToast('メモを保存しました');
+    }
+
+    function deleteIdea(id) {
+      appState.ideas = appState.ideas.filter(i => i.id !== id);
+      saveState();
+      renderAll();
+      showToast('メニューから削除しました');
+    }
+
+    // Add / Edit Modal Handlers
+    function openAddModal() {
+      document.getElementById('edit-idea-id').value = '';
+      document.getElementById('modal-title').innerHTML = 'オーダーする <span class="font-sans text-xs font-normal text-espressoLight">(注文伝票)</span>';
+      document.getElementById('idea-title').value = '';
+      populateOrderSelectOptions(
+        appState.customOptions.categories[0] || DEFAULT_CATEGORIES[0],
+        appState.customOptions.moods[0] || DEFAULT_MOODS[0]
+      );
+      document.getElementById('idea-status').value = 'beans';
+      document.getElementById('idea-note').value = '';
+      document.getElementById('idea-modal').classList.remove('hidden');
+      document.getElementById('idea-title').focus();
+    }
+
+    function openEditModal(id) {
+      const idea = appState.ideas.find(i => i.id === id);
+      if (!idea) return;
+      document.getElementById('edit-idea-id').value = idea.id;
+      document.getElementById('modal-title').innerHTML = 'オーダー内容の修正 <span class="font-sans text-xs font-normal text-espressoLight">(注文伝票)</span>';
+      document.getElementById('idea-title').value = idea.title;
+      populateOrderSelectOptions(
+        idea.category,
+        idea.mood || appState.customOptions.moods[0] || DEFAULT_MOODS[0]
+      );
+      document.getElementById('idea-status').value = idea.status === 'resting' ? 'drip' : idea.status;
+      document.getElementById('idea-note').value = idea.note || '';
+      document.getElementById('idea-modal').classList.remove('hidden');
+    }
+
+    function closeAddModal() {
+      document.getElementById('idea-modal').classList.add('hidden');
+    }
+
+    function handleSaveIdea(e) {
+      e.preventDefault();
+      const editId = document.getElementById('edit-idea-id').value;
+      const title = document.getElementById('idea-title').value.trim();
+      const category = document.getElementById('idea-category').value;
+      const mood = document.getElementById('idea-mood').value;
+      const status = document.getElementById('idea-status').value;
+      const note = document.getElementById('idea-note').value.trim();
+
+      if (!title) return;
+
+      if (editId) {
+        const idea = appState.ideas.find(i => i.id === editId);
+        if (idea) {
+          idea.title = title;
+          idea.category = category;
+          idea.mood = mood;
+          if (idea.status !== 'served') {
+            idea.status = status;
+          }
+          idea.note = note;
+        }
+        showToast('オーダー内容を更新しました ☕');
+      } else {
+        const todayStr = new Date().toISOString().split('T')[0];
+        appState.ideas.unshift({
+          id: 'idea-' + Date.now(),
+          title,
+          category,
+          mood,
+          status,
+          note,
+          reflection: '',
+          createdAt: todayStr,
+          completedAt: null
+        });
+        showToast('オーダーを受け付けました！✨');
+      }
+
+      saveState();
+      closeAddModal();
+      renderAll();
+    }
+
+    // Serve (Complete) Modal Handlers
+    function openServeModal(id) {
+      const idea = appState.ideas.find(i => i.id === id);
+      if (!idea) return;
+      pendingServeId = id;
+      document.getElementById('serve-item-title').textContent = idea.title;
+      document.getElementById('serve-reflection').value = '';
+      document.getElementById('serve-modal').classList.remove('hidden');
+      document.getElementById('serve-reflection').focus();
+    }
+
+    function closeServeModal() {
+      pendingServeId = null;
+      document.getElementById('serve-modal').classList.add('hidden');
+    }
+
+    function confirmServeIdea() {
+      if (!pendingServeId) return;
+      const idea = appState.ideas.find(i => i.id === pendingServeId);
+      if (!idea) return;
+
+      const reflection = document.getElementById('serve-reflection').value.trim();
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      idea.status = 'served';
+      idea.reflection = reflection;
+      idea.completedAt = todayStr;
+
+      saveState();
+      closeServeModal();
+      renderAll();
+
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 55,
+          spread: 65,
+          origin: { y: 0.65 },
+          colors: ['#C88A4B', '#6B4423', '#FACC15', '#E11D48', '#FAF6F0']
+        });
+      }
+
+      showToast('ごちそうさまでした！ワッフルが焼き上がりました 🧇✨');
+    }
+
+    // Recipe Book Modal (Archive Only)
+    function openRecipeBookModal() {
+      const listEl = document.getElementById('recipe-book-list');
+      const served = appState.ideas
+        .filter(i => i.status === 'served')
+        .sort((a, b) => (b.completedAt || '').localeCompare(a.completedAt || ''));
+
+      if (served.length === 0) {
+        listEl.innerHTML = `<p class="text-center text-sm text-espressoLight py-8">まだ「ごちそうさま」したひと皿はありません。</p>`;
+      } else {
+        listEl.innerHTML = served.map(item => `
+          <div onclick="closeRecipeBookModal(); openSpecialDetailModal('${item.id}');" role="button" tabindex="0"
+            class="bg-white hover:bg-latte/45 rounded-2xl p-4 border border-latteDark/70 hover:border-caramel/60 flex flex-col gap-1.5 cursor-pointer transition">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-latte text-mocha">${escapeHTML(item.category)}</span>
+                <span class="text-[11px] text-espressoLight">${escapeHTML(item.mood || '')}</span>
+              </div>
+              <span class="font-serif text-xs text-espressoLight">Served on ${item.completedAt || 'Unknown'}</span>
+            </div>
+            <h4 class="font-bold text-base text-espresso">${escapeHTML(item.title)}</h4>
+            ${item.note ? `<p class="text-xs text-espressoLight">メモ: ${escapeHTML(item.note)}</p>` : ''}
+            ${item.reflection ? `<p class="text-xs text-mocha bg-cream p-2.5 rounded-xl mt-1">✨ ${escapeHTML(item.reflection)}</p>` : `<p class="text-[11px] text-caramel font-medium mt-0.5">クリックして振り返りを書く →</p>`}
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('recipe-book-modal').classList.remove('hidden');
+      refreshIcons();
+    }
+
+    function closeRecipeBookModal() {
+      document.getElementById('recipe-book-modal').classList.add('hidden');
+    }
+
+    // Backup Save & Restore Handlers (Single unified 'ideaput_cafe' state)
+    function exportBackupData() {
+      try {
+        const dataStr = JSON.stringify(appState, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ideaput-cafe-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('これまでの記録を保存しました 📥');
+      } catch (err) {
+        showToast('記録の保存中に問題が起きました');
+      }
+    }
+
+    function importBackupData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          const candidate = parsed && parsed.data && Array.isArray(parsed.data.ideas)
+            ? parsed.data
+            : (parsed && Array.isArray(parsed.ideas) ? parsed : null);
+
+          if (!candidate) {
+            showToast('ideaput cafe の記録ファイルではないようです');
+            return;
+          }
+
+          appState = normalizeState(candidate);
+          saveState();
+          applyNightModeUI(appState.nightMode);
+          renderAll();
+          showToast('保存した記録を復元しました ☕');
+        } catch (err) {
+          showToast('ファイルの読み込みに失敗しました');
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Night Cafe Mode (Close Cafe)
+    function applyNightModeUI(isNight) {
+      const overlay = document.getElementById('night-overlay');
+      if (!overlay) return;
+      if (isNight) {
+        document.body.classList.add('night-mode');
+        overlay.classList.remove('hidden');
+      } else {
+        document.body.classList.remove('night-mode');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    function toggleNightMode(isNight) {
+      appState.nightMode = Boolean(isNight);
+      saveState();
+      applyNightModeUI(appState.nightMode);
+      if (!appState.nightMode) {
+        showToast('お席をご用意してます。今日もゆっくりどうぞ ☕');
+      }
+      refreshIcons();
+    }
+
+    // Utility: Warm Toast Notification
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'bg-espresso text-cream px-4 py-3 rounded-2xl shadow-lg text-xs sm:text-sm font-medium flex items-center gap-2 border border-caramel/40 transition-all duration-300 transform translate-y-2 opacity-0';
+      toast.innerHTML = `<span class="text-caramel">☕</span><span>${escapeHTML(message)}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(m) {
+        return ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[m];
+      });
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      applyNightModeUI(appState.nightMode);
+      renderAll();
+    });
+  </script>
+</body>
+</html>
